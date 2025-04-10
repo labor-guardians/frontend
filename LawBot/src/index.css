@@ -1,2 +1,8 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@font-face {
+    font-family: 'KanitBold';
+    src: url('/src/assets/fonts/Kanit-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  }
