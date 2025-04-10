@@ -6,3 +6,7 @@
     font-weight: bold;
     font-style: normal;
   }
+
+  html,body{
+    @apply bg-white text-[#653F21] p-3
+  }
