@@ -1,10 +1,13 @@
 import "./App.css";
 import { Button } from "./components/Button";
 import { InputText } from "./components/InputText";
+import { Nav } from "./components/Nav";
 
 function App() {
     return (
         <>
+            <Nav />
+
             <div className="bg-blue-500">test</div>
             <button className="btn">Default</button>
             <InputText
