@@ -1,6 +1,7 @@
 import React from 'react'
 import logo from "../assets/로고.png"
 import { Button } from './Button'
+import { Nav } from './Nav'
 export const Header = () => {
   return (
     <div className='p-10 flex-1' >
@@ -12,6 +13,7 @@ export const Header = () => {
                   <p>LawBot</p>
               </div>
             </div>
+            <Nav/>
             <Button text="login" text-xs sm:text-sm md:text-base lg:text-lg p-2 sm:p-3/>
         </div>
     </div>
