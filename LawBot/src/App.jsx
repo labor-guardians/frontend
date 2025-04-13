@@ -1,13 +1,13 @@
+import { Outlet } from "react-router-dom";
 import "./App.css";
-import { Button } from "./components/Button";
-import { InputText } from "./components/InputText";
-import { Nav } from "./components/Nav";
-import { MainPage } from "./pages/MainPage";
+
+import { Header } from "./components/Header";
 
 function App() {
     return (
         <>
-        <MainPage/>
+            <Header />
+            <Outlet />
         </>
     );
 }
