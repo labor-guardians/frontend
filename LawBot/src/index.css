@@ -1,12 +1,13 @@
 @import "tailwindcss";
 @plugin "daisyui";
 @font-face {
-    font-family: 'KanitBold';
-    src: url('/src/assets/fonts/Kanit-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
-  }
+  font-family: "KanitBold";
+  src: url("/src/assets/fonts/Kanit-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
 
-  html,body{
-    @apply bg-white text-[#653F21] p-3
-  }
+html,
+body {
+  @apply bg-white text-black p-3;
+}
