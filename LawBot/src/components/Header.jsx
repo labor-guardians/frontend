@@ -3,11 +3,18 @@ import logo from "../assets/로고.png";
 import { Button } from "./Button";
 import { Nav } from "./Nav";
 import { Link, useNavigate } from "react-router-dom";
+import {
+    CHAT_BOT,
+    LABOR_ATTORNEY_CHAT_HISTORY,
+    LABOR_ATTORNEY_LIST,
+    LOGIN,
+    MYPAGE,
+} from "../constants/path";
 export const Header = () => {
     const navigate = useNavigate();
 
     const goToLogin = () => {
-        navigate("/login");
+        navigate(LOGIN);
     };
 
     return (
@@ -36,7 +43,7 @@ export const Header = () => {
                         className="menu dropdown-content rounded-box z-1 mt-3 shadow bg-base-200 "
                     >
                         <li>
-                            <Link to="/chatbot">챗봇</Link>
+                            <Link to={CHAT_BOT}>챗봇</Link>
                             <ul className="menu bg-base-200 rounded-box w-56">
                                 <li>
                                     <a>산재 처리 관련 법률</a>
@@ -50,13 +57,13 @@ export const Header = () => {
                             </ul>
                         </li>
                         <li>
-                            <Link to="/labor-attorney-list">노무사</Link>
+                            <Link to={LABOR_ATTORNEY_LIST}>노무사</Link>
                         </li>
                         <li>
-                            <Link to="/labor-attorney-chat-history">채팅기록</Link>
+                            <Link to={LABOR_ATTORNEY_CHAT_HISTORY}>채팅기록</Link>
                         </li>
                         <li>
-                            <Link to="/mypage">마이페이지</Link>
+                            <Link to={MYPAGE}>마이페이지</Link>
                         </li>
                     </ul>
                 </div>
