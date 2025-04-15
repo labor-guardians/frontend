@@ -17,7 +17,7 @@ export const FindId = () => {
     const emailInputRef = useRef(null);
     const numberInputRef = useRef(null);
 
-    const sendNumber = (e) => {
+    const sendNumber = () => {
         if (!formData.name) {
             nameInputRef.current.focus();
             return;
