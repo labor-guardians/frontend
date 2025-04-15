@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { InputText } from "../components/InputText";
 import { Button } from "../components/Button";
 import { Link } from "react-router-dom";
+import { FIND_ID, SIGN_UP } from "../constants/path";
 
 export const Login = () => {
     const [formData, setFormData] = useState({
@@ -65,9 +66,9 @@ export const Login = () => {
             </form>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-5 text-center">
-                <Link to="/sign-up">회원가입</Link>
+                <Link to={SIGN_UP}>회원가입</Link>
                 <div className="hidden sm:block">|</div>
-                <Link to="/find-id-password">아이디/비밀번호 찾기</Link>
+                <Link to={FIND_ID}>아이디 찾기</Link>
             </div>
         </div>
     );

@@ -2,6 +2,7 @@ import React from "react";
 import { InputText } from "../components/InputText";
 import { Button } from "../components/Button";
 import { Link } from "react-router-dom";
+import { LOGIN, SIGN_UP_LABOR } from "../constants/path";
 
 export const SignUp = () => {
     return (
@@ -40,9 +41,9 @@ export const SignUp = () => {
                 </div>
 
                 <div className="mt-8 flex flex-col sm:flex-row gap-5 text-center">
-                    <Link to="/login">로그인</Link>
+                    <Link to={LOGIN}>로그인</Link>
                     <div className="hidden sm:block">|</div>
-                    <Link to="/sign-up-labor">노무사 회원가입</Link>
+                    <Link to={SIGN_UP_LABOR}>노무사 회원가입</Link>
                 </div>
             </div>
         </>
