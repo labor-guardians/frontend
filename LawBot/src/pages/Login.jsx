@@ -48,6 +48,7 @@ export const Login = () => {
                     ref={idInputRef}
                 />
                 <InputText
+                    type="password"
                     placeholder={"비밀번호를 입력하세요."}
                     label={"비빌번호"}
                     value={formData.password}
