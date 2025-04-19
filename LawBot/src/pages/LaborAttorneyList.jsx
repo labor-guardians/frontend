@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { LaborAttoneyCard } from "../components/LaborAttoneyCard";
 
 export const LaborAttorneyList = () => {
-    const list = [
+    const [list, setLust] = useState([
         {
             id: 1,
             name: "노무사 이름",
@@ -77,7 +77,7 @@ export const LaborAttorneyList = () => {
             introduce: "노무사 소개",
             profile: "profil.png",
         },
-    ];
+    ]);
 
     return (
         <div className="flex flex-col justify-center items-center">
