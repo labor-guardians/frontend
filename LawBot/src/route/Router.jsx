@@ -13,6 +13,7 @@ import {
     CHAT_BOT,
     FIND_ID,
     FIND_PASSWORD,
+    LABOR_ATTORNEY_CHAT,
     LABOR_ATTORNEY_CHAT_HISTORY,
     LABOR_ATTORNEY_LIST,
     LOGIN,
@@ -21,6 +22,7 @@ import {
     SIGN_UP_LABOR,
 } from "../constants/path";
 import { FindPassword } from "../pages/FindPassword";
+import { LaborAttorneyChat } from "../pages/LaborAttorneyChat";
 
 export const router = createBrowserRouter([
     {
@@ -39,6 +41,7 @@ export const router = createBrowserRouter([
                 path: LABOR_ATTORNEY_CHAT_HISTORY,
                 element: <LaborAttorneyChatHistory />,
             },
+            { path: `${LABOR_ATTORNEY_CHAT}/:id`, element: <LaborAttorneyChat /> },
             { path: MYPAGE, element: <MyPage /> },
         ],
     },

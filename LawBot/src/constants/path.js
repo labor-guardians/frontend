@@ -6,4 +6,5 @@ export const FIND_PASSWORD = "/find-password";
 export const CHAT_BOT = "/chatbot";
 export const LABOR_ATTORNEY_LIST = "labor-attorney-list";
 export const LABOR_ATTORNEY_CHAT_HISTORY = "/labor-attorney-chat-history";
+export const LABOR_ATTORNEY_CHAT = "labor-attorney-chat";
 export const MYPAGE = "/mypage";
