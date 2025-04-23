@@ -4,12 +4,14 @@ import "./App.css";
 import { Header } from "./components/Header";
 
 function App() {
-    return (
-        <div className="max-w-[1440px] m-auto">
-            <Header />
-            <Outlet />
-        </div>
-    );
+  return (
+    <div className="max-w-[1440px] m-auto">
+      <Header />
+      <div className="mt-[150px]">
+        <Outlet />
+      </div>
+    </div>
+  );
 }
 
 export default App;
