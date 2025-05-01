@@ -40,11 +40,11 @@ export const Header = () => {
           </div>
           <ul
             tabIndex={0}
-            className="menu dropdown-content rounded-box z-1 mt-3 shadow bg-base-200  bg-white "
+            className="menu dropdown-content rounded-box z-1 mt-3 shadow  bg-white "
           >
             <li>
               <Link to={CHAT_BOT}>챗봇</Link>
-              <ul className="menu bg-base-200 rounded-box w-56  bg-white">
+              <ul className="menu rounded-box w-56  bg-white">
                 <li>
                   <a>산재 처리 관련 법률</a>
                 </li>
