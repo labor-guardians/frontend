@@ -29,6 +29,10 @@ export const SignUp = () => {
       setFormData((prev) => ({ ...prev, [label]: value }));
     }
   };
+
+  //ID 중복 검사
+  const handleCheckDupId = () => {};
+
   const handleSubmit = async () => {
     try {
       //유효성 검사
@@ -100,7 +104,11 @@ export const SignUp = () => {
                       onChange={(e) => handleChange(field, e.target.value)}
                     />
                     {field === "id" ? (
-                      <Button text="중복 확인" size="w-[10vw]" />
+                      <Button
+                        text="중복 확인"
+                        size="w-[10vw]"
+                        onClick={handleCheckDupId}
+                      />
                     ) : (
                       ""
                     )}
@@ -111,7 +119,7 @@ export const SignUp = () => {
               )
             )}
             <div className="mt-10">
-              <Button text="회원가입" size="w-[25vw]" />
+              <Button text="회원가입" size="w-[25vw]" onClick={handleSubmit} />
             </div>
 
             <div className="justify-center mt-8 flex flex-col sm:flex-row gap-5 text-center">
