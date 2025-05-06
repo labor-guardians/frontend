@@ -20,9 +20,9 @@ export const LaborChatHistoryCard = ({ id, name, lastChat, profile }) => {
             </figure>
             <div className="card-body">
                 <h2 className="card-title ">{name}</h2>
-                <div className="flex flex-row gap-8">
+                <div className="flex flex-row gap-8 ">
                     <p className="line-clamp-2">{lastChat}</p>
-                    <div className="card-actions w-full justify-end">
+                    <div className="card-actions w-fit justify-end shrink-0">
                         <Button onClick={goChat} text="이어서 채팅하기" />
                     </div>
                 </div>

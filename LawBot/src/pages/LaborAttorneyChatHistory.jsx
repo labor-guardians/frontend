@@ -49,9 +49,9 @@ export const LaborAttorneyChatHistory = () => {
     ]);
 
     return (
-        <div>
-            <h2 className="text-2xl font-bold mt-10 mb-5 text-center">노무사와 대화기록</h2>
-            <div className="h-[1px] w-20 bg-gray-200  mb-10"></div>
+        <div className="flex flex-col justify-center items-center">
+            <h2 className=" text-2xl font-bold mt-10 mb-5 text-center">노무사와 대화기록</h2>
+            <div className="h-[1px] w-20 bg-gray-200 mb-10"></div>
             <div className="flex flex-col items-center gap-4">
                 {histories.map((history) => (
                     <LaborChatHistoryCard
