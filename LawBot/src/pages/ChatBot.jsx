@@ -52,7 +52,7 @@ export const ChatBot = () => {
   const saveEditedTitle = async () => {
     try {
       const res = await apiClient.put(
-        `conversations/${editingRoomId}/title`,
+        `/api/conversations/${editingRoomId}/title`,
         null,
         {
           params: {
@@ -74,7 +74,7 @@ export const ChatBot = () => {
   };
   const handleDelete = async (id) => {
     try {
-      const res = await apiClient.delete(`conversations/${id}`, {
+      const res = await apiClient.delete(`/api/conversations/${id}`, {
         params: {
           userId: "user123",
         },
@@ -88,7 +88,7 @@ export const ChatBot = () => {
   const fetchChatRooms = async () => {
     setSendMessage("");
     try {
-      const res = await apiClient.get("conversations/user/user123", {
+      const res = await apiClient.get("/api/conversations/user/user123", {
         params: {
           type: "BOT",
         },
@@ -116,7 +116,7 @@ export const ChatBot = () => {
     console.log(targetId);
     try {
       setSendMessage("");
-      const res = await apiClient.post("chat", data);
+      const res = await apiClient.post("/api/chat", data);
       if (res.status === 200) {
         const { userMessage, botMessage } = res.data;
         console.log(res.data);
@@ -146,7 +146,7 @@ export const ChatBot = () => {
   //채팅 목록 상세 보기
   const loadChatRoom = async (conversationId) => {
     try {
-      const res = await apiClient.get(`conversations/${conversationId}`, {
+      const res = await apiClient.get(`/api/conversations/${conversationId}`, {
         params: {
           accessorId: "user123",
           isConsultant: false,
