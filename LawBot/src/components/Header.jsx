@@ -27,21 +27,16 @@ export const Header = () => {
               className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              {" "}
+              stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M4 6h16M4 12h8m-8 6h16"
-              />{" "}
+              />
             </svg>
           </div>
-          <ul
-            tabIndex={0}
-            className="menu dropdown-content rounded-box z-1 mt-3 shadow  bg-white "
-          >
+          <ul tabIndex={0} className="menu dropdown-content rounded-box z-1 mt-3 shadow  bg-white ">
             <li>
               <Link to={CHAT_BOT}>챗봇</Link>
               <ul className="menu rounded-box w-56  bg-white">
@@ -71,7 +66,7 @@ export const Header = () => {
         <Link className="flex flex-row">
           <img src={logo} className="w-14 md:w-18 h-fit  ml-1" />
           <div className="flex flex-col justify-center text-[#653F21] font-bold text-xl md:text-2xl ml-3 font-['KanitBold']">
-            <p>노동</p>
+            <p className="font-FlightSans-Title">노동</p>
             <p>LawBot</p>
           </div>
         </Link>
@@ -81,7 +76,7 @@ export const Header = () => {
       </div>
       <div className="navbar-end">
         <Button
-          text="login"
+          text="Login"
           text-xs
           sm:text-sm
           md:text-base
