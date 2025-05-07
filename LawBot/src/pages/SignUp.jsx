@@ -12,12 +12,13 @@ export const SignUp = () => {
     name: "",
   });
 
-  const [isUsedId, setIsUsedId] = useState();
+  const [isUsedId, setIsUserId] = useState();
   const [password, setPassword] = useState("");
   const [checkPwd, setCheckPwd] = useState();
   const [validPwd, setValidPwd] = useState(false);
   const [errMsg, setErrMsg] = useState();
-
+  const [isEmailDup, setIsEmailDup] = useState(false);
+  const [emailCode, setEmailCode] = useState();
   const handleChange = (label, value) => {
     if (label == "password") {
       setPassword(value);
@@ -31,9 +32,79 @@ export const SignUp = () => {
   };
 
   //ID 중복 검사
-  const handleCheckDupId = () => {};
+  const handleCheckDupId = async () => {
+    if (!formData.id) {
+      setErrMsg("아이디를 입력해주세요.");
+    }
+    try {
+      const res = await apiClient.get("/api/auth/checkIdDuplicate", {
+        params: {
+          userid: formData.id,
+        },
+      });
+      if (res.status === 200) {
+        console.log(res.data);
+        setIsUserId(true);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
+  //비밀번호 확인
+  const pwdCheck = () => {
+    if (password === checkPwd) {
+      setValidPwd(true);
+    } else {
+      setCheckPwd(false);
+    }
+  };
+
+  //이메일 중복 확인
+  const emailDupCheck = async () => {
+    try {
+      const res = await apiClient.get("/api/auth/checkEmailDuplicate", {
+        params: {
+          email: formData.email,
+        },
+      });
+      if (res.status === 200) {
+        setIsEmailDup(true);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  //이메일 인증번호 발급
+  const emailCodeIssue = async () => {
+    if (password === "") {
+      setErrMsg("이메일을 입력해주세요.");
+      return;
+    }
+    if (!isEmailDup) {
+      setErrMsg("이미 가입된 이메일입니다.");
+    }
+    try {
+      const res = await apiClient.post("api/auth/sendEmailVerification", {
+        email: formData.email,
+      });
+      if (res.status === 200) {
+        setEmailCode(res.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  //이메일 인증
+  const emailVerify = async () => {
+    try {
+      const res = await apiClient.post("/api/auth/verifyEmail");
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const handleSubmit = async () => {
+    pwdCheck();
     try {
       //유효성 검사
       if (!formData.id || !formData.email || !formData.password || !checkPwd) {
@@ -53,7 +124,7 @@ export const SignUp = () => {
         ...formData,
         password,
       };
-      const res = await apiClient.post("/signup", payload);
+      const res = await apiClient.post("/api/auth/join/user", payload);
 
       if (res.status === 201) {
         alert("회원가입 완료");
@@ -72,21 +143,13 @@ export const SignUp = () => {
             {["id", "password", "passwordCheck", "email", "name"].map(
               (field, i) => (
                 <div key={field} className="flex flex-col mb-[2vh]">
-                  <p className="text-let text-l font-bold">
-                    {field === "id"
-                      ? "아이디"
-                      : field === "name"
-                      ? "이름"
-                      : field === "password"
-                      ? "비밀번호"
-                      : field === "passwordCheck"
-                      ? "비밀번호 확인"
-                      : field === "email"
-                      ? "이메일"
-                      : field}
-                  </p>
                   <div className="flex flex-row">
                     <InputText
+                      type={
+                        field === "password" || field === "passwordCheck"
+                          ? "password"
+                          : "text"
+                      }
                       placeholder={
                         field === "id"
                           ? "아이디"
@@ -98,26 +161,46 @@ export const SignUp = () => {
                           ? "비밀번호 확인"
                           : field === "email"
                           ? "이메일"
+                          : field == "emailCode"
+                          ? "인증코드"
                           : field
                       }
-                      label={field}
+                      label={
+                        field === "id"
+                          ? "아이디"
+                          : field === "name"
+                          ? "이름"
+                          : field === "password"
+                          ? "비밀번호"
+                          : field === "passwordCheck"
+                          ? "비밀번호 확인"
+                          : field === "email"
+                          ? "이메일"
+                          : field === "emailCode"
+                          ? "인증코드"
+                          : field
+                      }
                       onChange={(e) => handleChange(field, e.target.value)}
                     />
                     {field === "id" ? (
                       <Button
-                        text="중복 확인"
-                        size="w-[10vw]"
+                        text={isUsedId ? "중복확인완료" : "중복확인"}
+                        size="w-[10vw] text-[1vw]"
                         onClick={handleCheckDupId}
                       />
-                    ) : (
-                      ""
-                    )}
+                    ) : field === "email" ? (
+                      <Button
+                        text={isUsedId ? "인증완료" : "인증"}
+                        size="w-[10vw] text-[1vw]"
+                        onClick={handleCheckDupId}
+                      />
+                    ) : null}
                   </div>
-                  {isUsedId ? <p className={"text-red-500"}>{errMsg}</p> : ""}
-                  {validPwd ? "" : <p className={"text-red-500"}>{errMsg}</p>}
                 </div>
               )
             )}
+            {isUsedId ? <p className={"text-red-500"}>{errMsg}</p> : ""}
+            {validPwd ? "" : <p className={"text-red-500"}>{errMsg}</p>}
             <div className="mt-10">
               <Button text="회원가입" size="w-[25vw]" onClick={handleSubmit} />
             </div>
