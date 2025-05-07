@@ -17,7 +17,6 @@ export const SignUp = () => {
   const [password, setPassword] = useState("");
   const [checkPwd, setCheckPwd] = useState();
   const [validPwd, setValidPwd] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
   const [errors, setErrors] = useState({
     userid: "",
     password: "",
@@ -41,7 +40,6 @@ export const SignUp = () => {
     } else {
       setFormData((prev) => ({ ...prev, [label]: value }));
       setIsUserId(true);
-      // setEmailCodeSendSuc(false);
       setValidEmail(false);
     }
 
