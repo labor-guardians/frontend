@@ -11,11 +11,29 @@ export const MainPage = () => {
       <div className={"flex flex-col justify-center items-center mt-[40vh]"}>
         <p
           className={
-            "font-bold text-[6vw] sm:text-[4vw] md:text-[3vw] text-center leading-relaxed text-[#653F21]"
-          }
-        >
-          개인을 위한 <br />
-          노동 관련 법률 자문 챗봇
+            "font-FlightSans-Title text-3xl sm:text-5xl lg:text-6xl xl:text-7xl text-center leading-relaxed text-[#653F21]"
+          }>
+          <span className="animate-fadeIn-0 ">개</span>
+          <span className="animate-fadeIn-1">인</span>
+          <span className="animate-fadeIn-2">을</span>
+          <span className="inline-block animate-fadeIn-3">&nbsp;</span>
+          <span className="inline-block animate-fadeIn-4">위</span>
+          <span className="inline-block animate-fadeIn-5">한</span>
+          <br />
+          <span className="inline-block animate-fadeIn-6">노</span>
+          <span className="inline-block animate-fadeIn-7">동</span>
+          <span className="inline-block animate-fadeIn-8">&nbsp;</span>
+          <span className="inline-block animate-fadeIn-9">관</span>
+          <span className="inline-block animate-fadeIn-10">련</span>
+          <span className="inline-block animate-fadeIn-11">&nbsp;</span>
+          <span className="inline-block animate-fadeIn-12">법</span>
+          <span className="inline-block animate-fadeIn-13">률</span>
+          <span className="inline-block animate-fadeIn-14">&nbsp;</span>
+          <span className="inline-block animate-fadeIn-15">자</span>
+          <span className="inline-block animate-fadeIn-16">문</span>
+          <span className="inline-block animate-fadeIn-17">&nbsp;</span>
+          <span className="inline-block animate-fadeIn-18">챗</span>
+          <span className="inline-block animate-fadeIn-19">봇</span>
         </p>
         <Link to={CHAT_BOT}>
           <Button
