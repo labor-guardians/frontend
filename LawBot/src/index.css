@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @theme {
+  /* 메인페이지 글씨씨 */
   --animate-fadeIn-0: 1.4s fadeIn ease-in-out;
   --animate-fadeIn-1: 1.4s fadeIn 0.1s ease-in-out backwards;
   --animate-fadeIn-2: 1.4s fadeIn 0.15s ease-in-out backwards;
