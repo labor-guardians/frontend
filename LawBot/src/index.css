@@ -1,4 +1,39 @@
 @import "tailwindcss";
+@theme {
+  --animate-fadeIn-0: 1.4s fadeIn ease-in-out;
+  --animate-fadeIn-1: 1.4s fadeIn 0.1s ease-in-out backwards;
+  --animate-fadeIn-2: 1.4s fadeIn 0.15s ease-in-out backwards;
+  --animate-fadeIn-3: 1.4s fadeIn 0.2s ease-in-out backwards;
+  --animate-fadeIn-4: 1.4s fadeIn 0.25s ease-in-out backwards;
+  --animate-fadeIn-5: 1.4s fadeIn 0.3s ease-in-out backwards;
+  --animate-fadeIn-6: 1.4s fadeIn 0.35s ease-in-out backwards;
+  --animate-fadeIn-7: 1.4s fadeIn 0.4s ease-in-out backwards;
+  --animate-fadeIn-8: 1.4s fadeIn 0.45s ease-in-out backwards;
+  --animate-fadeIn-9: 1.4s fadeIn 0.5s ease-in-out backwards;
+  --animate-fadeIn-10: 1.4s fadeIn 0.55s ease-in-out backwards;
+  --animate-fadeIn-11: 1.4s fadeIn 0.6s ease-in-out backwards;
+  --animate-fadeIn-12: 1.4s fadeIn 0.65s ease-in-out backwards;
+  --animate-fadeIn-13: 1.4s fadeIn 0.7s ease-in-out backwards;
+  --animate-fadeIn-14: 1.4s fadeIn 0.75s ease-in-out backwards;
+  --animate-fadeIn-15: 1.4s fadeIn 0.8s ease-in-out backwards;
+  --animate-fadeIn-16: 1.4s fadeIn 0.85s ease-in-out backwards;
+  --animate-fadeIn-17: 1.4s fadeIn 0.9s ease-in-out backwards;
+  --animate-fadeIn-18: 1.4s fadeIn 0.95s ease-in-out backwards;
+  --animate-fadeIn-19: 1.4s fadeIn 1s ease-in-out backwards;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  --font-Black-Han-Sans: "BlackHanSans";
+  --font-FlightSans-Title: "FlightSans-Title";
+}
+
 @plugin "daisyui" {
   themes: light --default;
 }
@@ -10,7 +45,16 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "FlightSans-Title";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/2410-1@1.0/FlightSans-Title.woff2")
+    format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+
 html,
 body {
+  font-family: "Noto Sans KR";
   @apply bg-white text-black p-3;
 }
