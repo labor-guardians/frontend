@@ -7,7 +7,6 @@ export const LaborAttorneyList = () => {
 
   const loadConsultants = async () => {
     const consultants = await apiClient.get("/api/user/consultant");
-
     setLust(consultants.data);
   };
 
@@ -22,14 +21,14 @@ export const LaborAttorneyList = () => {
       </h2>
       <div className="h-[1px] w-20 bg-gray-200 mb-10 "></div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {list.map((attoney, idx) => (
+        {list.map((attoney, index) => (
           <LaborAttoneyCard
             userId={attoney.userId}
             userName={attoney.userName}
             description={attoney.description}
             photo={attoney.photo}
             key={attoney.userId}
-            idx={attoney.userId}
+            index={index}
           />
         ))}
       </div>
