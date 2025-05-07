@@ -1,0 +1,67 @@
+/* globals.css or tailwind.css */
+@tailwind utilities;
+
+/* 메인페이지 버튼 */
+@layer utilities {
+  .btn-main {
+    display: block;
+    padding: 16px 40px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(to right, #976946, #653f21);
+    box-shadow: 0 4px 15px 0 rgba(101, 63, 33, 0.75);
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-main::before {
+    content: "";
+    position: absolute;
+    top: -180px;
+    left: 0;
+    width: 30px;
+    height: 100%;
+    background-color: white;
+    animation: shiny 3s ease-in-out infinite;
+  }
+
+  .btn-main:hover {
+    background-position: 100% 0;
+    moz-transition: all 0.4s ease-in-out;
+    -o-transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    background: linear-gradient(to right, #976946, #653f21);
+  }
+
+  .btn-main:active {
+    box-shadow: 4px 4px 6px rgba(255, 255, 255, 0.3),
+      -4px -4px 6px rgba(116, 125, 136, 0.2),
+      inset -4px -4px 6px rgba(255, 255, 255, 0.2),
+      inset 4px 4px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Keyframes */
+  @keyframes shiny {
+    0% {
+      transform: scale(0) rotate(45deg);
+      opacity: 0;
+    }
+    80% {
+      transform: scale(0) rotate(45deg);
+      opacity: 0.5;
+    }
+    81% {
+      transform: scale(4) rotate(45deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(50) rotate(45deg);
+      opacity: 0;
+    }
+  }
+}

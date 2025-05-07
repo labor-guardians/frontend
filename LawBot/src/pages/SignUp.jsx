@@ -41,7 +41,7 @@ export const SignUp = () => {
     } else {
       setFormData((prev) => ({ ...prev, [label]: value }));
       setIsUserId(true);
-      setEmailCodeSendSuc(false);
+      // setEmailCodeSendSuc(false);
       setValidEmail(false);
     }
 
@@ -66,7 +66,10 @@ export const SignUp = () => {
           setIsUserId(false);
         } else {
           setIsUserId(true);
-          setErrors((prev) => ({ ...prev, userid: "이미 존재하는 아이디입니다." }));
+          setErrors((prev) => ({
+            ...prev,
+            userid: "이미 존재하는 아이디입니다.",
+          }));
         }
       }
     } catch (err) {
@@ -103,7 +106,10 @@ export const SignUp = () => {
           emailCodeIssue();
         } else {
           setIsEmailDup(true);
-          setErrors((prev) => ({ ...prev, email: "이미 존재하는 이메일입니다." }));
+          setErrors((prev) => ({
+            ...prev,
+            email: "이미 존재하는 이메일입니다.",
+          }));
           return;
         }
       }
@@ -159,11 +165,17 @@ export const SignUp = () => {
         return;
       }
       if (isUsedId) {
-        setErrors((prev) => ({ ...prev, userid: "아이디 중복검사가 필요합니다." }));
+        setErrors((prev) => ({
+          ...prev,
+          userid: "아이디 중복검사가 필요합니다.",
+        }));
         return;
       }
       if (!validPwd) {
-        setErrors((prev) => ({ ...prev, passwordCheck: "비밀번호를 다시 확인해주세요." }));
+        setErrors((prev) => ({
+          ...prev,
+          passwordCheck: "비밀번호를 다시 확인해주세요.",
+        }));
         return;
       }
       if (!validEmail) {
@@ -207,7 +219,11 @@ export const SignUp = () => {
               <div key={field} className="flex flex-col mb-[2vh]">
                 <div className="flex flex-row">
                   <InputText
-                    type={field === "password" || field === "passwordCheck" ? "password" : "text"}
+                    type={
+                      field === "password" || field === "passwordCheck"
+                        ? "password"
+                        : "text"
+                    }
                     placeholder={
                       field === "userid"
                         ? "아이디"
@@ -248,7 +264,13 @@ export const SignUp = () => {
                     />
                   ) : field === "email" ? (
                     <Button
-                      text={validEmail ? "인증완료" : emailCodeSendSuc ? "인증요청" : "인증"}
+                      text={
+                        validEmail
+                          ? "인증완료"
+                          : emailCodeSendSuc
+                          ? "인증요청"
+                          : "인증"
+                      }
                       size="w-[10vw]"
                       onClick={handleEmailAuth}
                     />

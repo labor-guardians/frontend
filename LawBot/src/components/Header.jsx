@@ -66,7 +66,7 @@ export const Header = () => {
         <Link className="flex flex-row">
           <img src={logo} className="w-14 md:w-18 h-fit  ml-1" />
           <div className="flex flex-col justify-center text-[#653F21] font-bold text-xl md:text-2xl ml-3 font-['KanitBold']">
-            <p className="font-FlightSans-Title">노동</p>
+            <p className="font-bold">노동</p>
             <p>LawBot</p>
           </div>
         </Link>
