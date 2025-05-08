@@ -15,18 +15,9 @@ import { BsPersonCircle } from 'react-icons/bs';
 export const Header = () => {
   const navigate = useNavigate();
   const [id, setId] = useState(null);
-  const [userInfo, setUserInfo] = useState(null);
-
-  const getUserInfo = async (localStorgaeId) => {
-    const infoResponse = await apiClient.get(`/api/user/${localStorgaeId}`);
-    setUserInfo(infoResponse.data);
-  };
 
   useEffect(() => {
     const localStorgaeId = localStorage.getItem('id');
-    if (localStorgaeId) {
-      getUserInfo(localStorgaeId);
-    }
     setId(localStorgaeId);
   }, []);
 
@@ -37,6 +28,7 @@ export const Header = () => {
   const logout = () => {
     localStorage.clear();
     window.location.replace('/');
+    
   };
 
   return (
@@ -102,16 +94,14 @@ export const Header = () => {
       </div>
       <div className="navbar-end">
         {id ? (
-          <>
-            <span>안녕하세요</span>
-            <Button
-              text="Logout"
-              size={
-                'btn-outline text-xs sm:text-sm md:text-base lg:text-lg p-2 sm:p-3'
-              }
-              onClick={goToLogin}
-            />
-          </>
+        
+            <button
+              className="btn btn-outline text-xs sm:text-sm md:text-base lg:text-lg p-2 sm:p-3 border-[#593315] text-[#593315]"
+              onClick={logout}
+            >
+              Logout
+            </button>
+          
         ) : (
           <Button
             text="Login"
