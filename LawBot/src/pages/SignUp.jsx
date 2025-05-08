@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { InputText } from "../components/InputText";
 import { Button } from "../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LOGIN, SIGN_UP, SIGN_UP_LABOR } from "../constants/path";
 import { apiClient } from "../services/apiClient";
 
@@ -29,7 +29,7 @@ export const SignUp = () => {
   const [isEmailDup, setIsEmailDup] = useState(true);
   const [emailCodeSendSuc, setEmailCodeSendSuc] = useState(false);
   const [validEmail, setValidEmail] = useState(false);
-
+  const navigate=useNavigate()
   const handleChange = (label, value) => {
     if (label == "password") {
       setPassword(value);
@@ -39,6 +39,14 @@ export const SignUp = () => {
       setValidPwd(value === password);
     } else {
       setFormData((prev) => ({ ...prev, [label]: value }));
+    }
+    if (label === "userid") {
+      setIsUserId(true);
+    }
+    if(label==="email"){
+      setIsEmailDup(false);
+      setEmailCodeSendSuc(false);
+      setValidEmail(false);
     }
     setErrors((prev) => ({ ...prev, [label]: "", global: "" }));
   };
@@ -188,6 +196,7 @@ export const SignUp = () => {
 
       if (res.status === 200) {
         alert("회원가입 완료");
+        navigate(LOGIN)
       }
     } catch (err) {
       console.log(e);
