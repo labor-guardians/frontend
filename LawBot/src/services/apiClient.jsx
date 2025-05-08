@@ -1,9 +1,11 @@
-import axios from "axios";
-import { baseURL } from "../constants/baseURL";
+import axios from 'axios';
+import { baseURL } from '../constants/baseURL';
 
 export const apiClient = axios.create({
   baseURL: baseURL,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
+    'access-control-expose-headers': 'access',
   },
+  withCredentials: true,
 });
