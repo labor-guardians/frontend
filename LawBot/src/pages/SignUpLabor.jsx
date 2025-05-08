@@ -4,6 +4,8 @@ import { Button } from "../components/Button";
 import { Link } from "react-router-dom";
 import { LOGIN, SIGN_UP, SIGN_UP_LABOR } from "../constants/path";
 import { apiClient } from "../services/apiClient";
+import axios from "axios";
+import { baseURL } from "../constants/baseURL";
 
 export const SignUpLabor = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +16,8 @@ export const SignUpLabor = () => {
     description: "",
     role: "",
     emailCode: "",
+    password:"",
+    passwordCheck:""
   });
 
   const [isUsedId, setIsUsedId] = useState(true);
@@ -45,9 +49,8 @@ export const SignUpLabor = () => {
       setValidPwd(value === password);
     } else {
       setFormData((prev) => ({ ...prev, [label]: value }));
-      setIsUsedId(true);
-      setValidEmail(false);
     }
+    setErrors((prev) => ({ ...prev, [label]: "", global: "" }));
   };
 
   //ID 중복 검사
@@ -203,14 +206,18 @@ export const SignUpLabor = () => {
       }
 
       const fd = new FormData();
-      fd.append("userid", formData.userid);
-      fd.append("password", password);
-      fd.append("username", formData.username);
-      fd.append("email", formData.email);
-      fd.append("role", "consultant");
-      fd.append("description", formData.description);
+      const consultantData = {
+        userid: formData.userid,
+        password: formData.password,
+        username: formData.username,
+        email: formData.email,
+        description:formData.description
+      }
+      fd.append("ConsultantData", new Blob([JSON.stringify(consultantData)], { type: "application/json" }));
       fd.append("license", formData.license);
-      const res = await apiClient.post("/api/auth/join/consultant", fd, {
+
+
+      const res = await axios.post(`${baseURL}/api/auth/join/consultant`, fd, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -281,6 +288,8 @@ export const SignUpLabor = () => {
                           ? "비밀번호 확인"
                           : field === "email"
                           ? "이메일"
+                          : field === "emailCode"
+                          ? "인증코드"
                           : field === "license"
                           ? "파일이름"
                           : field
@@ -296,11 +305,21 @@ export const SignUpLabor = () => {
                           ? "비밀번호 확인"
                           : field === "email"
                           ? "이메일"
+                          : field === "emailCode"
+                          ? "인증코드"
                           : field === "license"
                           ? "파일이름"
                           : field
                       }
-                      value={field === "license" ? selectedImg : undefined}
+                      value={
+                        field === "license"
+                        ? selectedImg
+                        : field === "password"
+                        ? password
+                        : field === "passwordCheck"
+                        ? checkPwd ?? ""
+                        : formData[field] ?? ""
+                        }
                       readOnly={field === "license"}
                       onChange={(e) => handleChange(field, e.target.value)}
                     />
@@ -308,8 +327,8 @@ export const SignUpLabor = () => {
                     <textarea
                       className="textarea bg-white border border-gray-300 p-2 rounded-md w-full"
                       placeholder="소개글을 작성해주세요."
-                      value={formData.description}
-                      onChange={(e) => handleChange("content", e.target.value)}
+                      value={formData.description??""}
+                      onChange={(e) => handleChange("description", e.target.value)}
                     />
                   ) : (
                     <input

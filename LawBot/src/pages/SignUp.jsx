@@ -39,10 +39,7 @@ export const SignUp = () => {
       setValidPwd(value === password);
     } else {
       setFormData((prev) => ({ ...prev, [label]: value }));
-      setIsUserId(true);
-      setValidEmail(false);
     }
-
     setErrors((prev) => ({ ...prev, [label]: "", global: "" }));
   };
 
@@ -186,9 +183,6 @@ export const SignUp = () => {
         password: password,
         username: formData.username,
         email: formData.email,
-        role: "user",
-        description: "",
-        license: "",
       };
       const res = await apiClient.post("/api/auth/join/user", data);
 
