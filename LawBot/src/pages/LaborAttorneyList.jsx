@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LaborAttoneyCard } from '../components/LaborAttoneyCard';
 import { apiClient } from '../services/apiClient';
-import useUserData from '../constants/hooks/useUserData';
 
 export const LaborAttorneyList = () => {
   const [list, setList] = useState([]);
@@ -10,8 +9,6 @@ export const LaborAttorneyList = () => {
     const consultants = await apiClient.get('/api/user/consultant');
     setList(consultants.data);
   };
-
-  const { userId, access, role } = useUserData();
 
   useEffect(() => {
     loadConsultants();
