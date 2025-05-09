@@ -4,19 +4,20 @@ import send from '../assets/chatSend.png';
 import { baseURL, wsBaseURL } from '../constants/baseURL';
 import { apiClient } from '../services/apiClient';
 import SockJS from 'sockjs-client';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import useUserData from '../constants/hooks/useUserData';
+import { CONSULTANT, USER } from '../constants/role';
 
 export const LaborAttorneyChat = () => {
   // ======================== 🔧 파라미터 & 유저 데이터 ========================
-  const params = useParams();
-  const consaltantId = params.consaltantId;
-  const { userId } = useUserData();
+  const { userId, role } = useUserData();
   const location = useLocation();
   const stateInfo = location.state;
 
   // ======================== 🧠 상태 ========================
   const [conversationId, setConversationId] = useState();
+  const [otherUserId, setOtherUserId] = useState();
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
 
@@ -25,20 +26,25 @@ export const LaborAttorneyChat = () => {
 
   // ✅ 1. [최초 진입 시] state에서 conversationId가 넘어온 경우 → 기존 채팅방
   useEffect(() => {
-    if (stateInfo && stateInfo.conversationId) {
-      setConversationId(stateInfo.conversationId);
+    if (stateInfo) {
+      if (stateInfo.conversationId) {
+        setConversationId(stateInfo.conversationId);
+      }
+      if (stateInfo.otherUserId) {
+        setOtherUserId(stateInfo.otherUserId);
+      }
     }
   }, []);
 
   // ✅ 2. [유저 ID와 상담사 ID가 있고 기존 conversationId가 없는 경우] → 새 채팅방 생성
   useEffect(() => {
-    if (conversationId == null && userId && consaltantId) {
+    if (conversationId == null && userId && otherUserId) {
       makeNewConversation();
     }
 
     // 컴포넌트 unmount 시 disconnect
     return () => disconnect();
-  }, [userId, consaltantId]);
+  }, [userId, otherUserId]);
 
   // ✅ 3. conversationId가 세팅되면: 이전 메시지 가져오고, 웹소켓 연결
   useEffect(() => {
@@ -61,7 +67,7 @@ export const LaborAttorneyChat = () => {
       conversationId: conversationId,
       senderId: userId,
       content: input,
-      fromUser: true,
+      fromUser: role == USER,
     };
 
     stomptRef.current?.publish({
@@ -77,9 +83,13 @@ export const LaborAttorneyChat = () => {
   const makeNewConversation = async () => {
     console.log('makeNewConversation');
 
+    // 본인이 노무사이면 반대로
+    const requestUserId = role == USER ? userId : otherUserId;
+    const consultantId = role == USER ? otherUserId : userId;
+
     try {
       const res = await apiClient.post(
-        `/api/conversations?userId=${userId}&title=제목&type=CONSULTANT&consultantId=${consaltantId}`,
+        `/api/conversations?userId=${requestUserId}&title=제목&type=CONSULTANT&consultantId=${consultantId}`,
       );
       setConversationId(res.data.id);
       console.log(res);
@@ -92,7 +102,7 @@ export const LaborAttorneyChat = () => {
   const getMessages = async () => {
     try {
       const res = await apiClient.get(
-        `${baseURL}/api/conversations/${conversationId}?accessorId=${userId}&isConsultant=false`,
+        `${baseURL}/api/conversations/${conversationId}?accessorId=${userId}&isConsultant=${role == CONSULTANT}`,
       );
       const message = res.data.messages;
       setMessages(message);
@@ -115,12 +125,28 @@ export const LaborAttorneyChat = () => {
           alert('오류 발생: ' + message.body);
         });
 
+        // 메세지 구독
         stompClient.subscribe(
           `/topic/conversations/${conversationId}`,
           (messageOutput) => {
             const message = JSON.parse(messageOutput.body);
             addMessage(message);
-            markMessageAsRead(message.id);
+
+            console.log(message);
+
+            // 내가 보낸 메세지만 채팅
+            if (!isMyMessage(message.fromUser, role)) {
+              markMessageAsRead(message.id);
+            }
+          },
+        );
+
+        // 읽음 구독
+        stompClient.subscribe(
+          `/topic/conversations/${conversationId}/read`,
+          (readStatusOutput) => {
+            const message = JSON.parse(readStatusOutput.body);
+            updateReadStatus(message);
           },
         );
       },
@@ -135,6 +161,14 @@ export const LaborAttorneyChat = () => {
     stomptRef.current = stompClient;
   };
 
+  const updateReadStatus = (message) => {
+    setMessages((prevMessages) =>
+      prevMessages.map((mes) =>
+        mes.id === message.id ? { ...mes, read: true } : mes,
+      ),
+    );
+  };
+
   // ======================== 🔌 소켓 연결 해제 ========================
   const disconnect = () => {
     if (stomptRef.current) {
@@ -144,6 +178,8 @@ export const LaborAttorneyChat = () => {
 
   // ======================== ✅ 메세지 읽음 처리 ========================
   const markMessageAsRead = (messageId) => {
+    console.log('읽음 publish');
+
     if (stomptRef.current) {
       const readRequest = {
         messageId,
@@ -183,13 +219,16 @@ export const LaborAttorneyChat = () => {
     });
   };
 
+  const isMyMessage = (fromUser, role) =>
+    (fromUser && role === USER) || (!fromUser && role === CONSULTANT);
+
   // ======================== 🖼️ UI ========================
   return (
     <div className="mt-10 flex flex-row justify-between">
       <div className="flex flex-col w-3xl relative m-auto">
         <div className="overflow-y-auto h-[calc(100vh-150px)] px-5 space-y-4">
-          {messages.map((msg, idx) =>
-            msg.fromUser ? (
+          {messages.map((msg, idx) => {
+            return isMyMessage(msg.fromUser, role) ? (
               <div className="chat chat-end self-end w-full" key={idx}>
                 <div className="chat-bubble bg-[#E2E2E2] text-black">
                   {msg.content}
@@ -207,7 +246,7 @@ export const LaborAttorneyChat = () => {
                   </div>
                 </div>
                 <div className="chat-header">
-                  노무사이름
+                  상대방이름
                   <time className="text-xs opacity-50">
                     {formatDate(msg.createdAt)}
                   </time>
@@ -216,8 +255,8 @@ export const LaborAttorneyChat = () => {
                   {msg.content}
                 </div>
               </div>
-            ),
-          )}
+            );
+          })}
           <div ref={messagesEndRef} className="h-20" />
         </div>
 

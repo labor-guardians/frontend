@@ -23,7 +23,7 @@ export const LaborAttorneyList = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {list.map((attoney, index) => (
           <LaborAttoneyCard
-            userId={attoney.userId}
+            consultantId={attoney.userId}
             userName={attoney.userName}
             description={attoney.description}
             photo={attoney.photo}

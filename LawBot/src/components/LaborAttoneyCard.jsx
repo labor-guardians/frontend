@@ -12,7 +12,7 @@ import 'animate.css';
 const MySwal = withReactContent(Swal);
 
 export const LaborAttoneyCard = ({
-  userId,
+  consultantId,
   userName,
   description,
   photo,
@@ -25,7 +25,11 @@ export const LaborAttoneyCard = ({
   // '채팅하기' 버튼 클릭
   const goChat = () => {
     if (role == USER) {
-      navigate(`/${LABOR_ATTORNEY_CHAT}/${userId}`);
+      navigate(`/${LABOR_ATTORNEY_CHAT}`, {
+        state: {
+          otherUserId: consultantId,
+        },
+      });
     } else if (role == CONSULTANT) {
       // 노무사 간 채팅 방지
       const swalWithBootstrapButtons = MySwal.mixin({

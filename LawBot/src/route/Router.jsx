@@ -42,7 +42,7 @@ export const router = createBrowserRouter([
         element: <LaborAttorneyChatHistory />,
       },
       {
-        path: `${LABOR_ATTORNEY_CHAT}/:consaltantId`,
+        path: `${LABOR_ATTORNEY_CHAT}`,
         element: <LaborAttorneyChat />,
       },
       { path: MYPAGE, element: <MyPage /> },

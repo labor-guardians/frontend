@@ -6,16 +6,16 @@ import { baseURL } from '../constants/baseURL';
 
 export const LaborChatHistoryCard = ({
   id,
-  consultantId,
+  otherUserId,
   title,
-  consultantName,
+  otherUserName,
   photo,
 }) => {
   const navigate = useNavigate();
 
   const goChat = () => {
-    navigate(`/${LABOR_ATTORNEY_CHAT}/${consultantId}`, {
-      state: { conversationId: id },
+    navigate(`/${LABOR_ATTORNEY_CHAT}`, {
+      state: { conversationId: id, otherUserId: otherUserId },
     });
   };
 
@@ -40,7 +40,7 @@ export const LaborChatHistoryCard = ({
         )}
       </figure>
       <div className="card-body">
-        <h2 className="card-title ">{consultantName}</h2>
+        <h2 className="card-title ">{otherUserName}</h2>
         <div className="flex flex-row gap-8 ">
           <p className="line-clamp-2">{title}</p>
           <div className="card-actions w-fit justify-end shrink-0">
