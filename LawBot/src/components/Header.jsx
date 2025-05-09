@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../assets/로고.png';
 import { Button } from './Button';
 import { Nav } from './Nav';
@@ -10,8 +10,6 @@ import {
   LOGIN,
   MYPAGE,
 } from '../constants/path';
-import { apiClient } from '../services/apiClient';
-import { BsPersonCircle } from 'react-icons/bs';
 export const Header = () => {
   const navigate = useNavigate();
   const [id, setId] = useState(null);
@@ -28,7 +26,6 @@ export const Header = () => {
   const logout = () => {
     localStorage.clear();
     window.location.replace('/');
-    
   };
 
   return (
@@ -73,7 +70,7 @@ export const Header = () => {
               <Link to={LABOR_ATTORNEY_LIST}>노무사</Link>
             </li>
             <li>
-              <Link to={LABOR_ATTORNEY_CHAT_HISTORY}>채팅기록</Link>
+              <Link to={LABOR_ATTORNEY_CHAT_HISTORY}>상담기록</Link>
             </li>
             <li>
               <Link to={MYPAGE}>마이페이지</Link>
@@ -94,14 +91,12 @@ export const Header = () => {
       </div>
       <div className="navbar-end">
         {id ? (
-        
-            <button
-              className="btn btn-outline text-xs sm:text-sm md:text-base lg:text-lg p-2 sm:p-3 border-[#593315] text-[#593315]"
-              onClick={logout}
-            >
-              Logout
-            </button>
-          
+          <button
+            className="btn btn-outline text-xs sm:text-sm md:text-base lg:text-lg p-2 sm:p-3 border-[#593315] text-[#593315]"
+            onClick={logout}
+          >
+            Logout
+          </button>
         ) : (
           <Button
             text="Login"

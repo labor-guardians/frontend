@@ -1,11 +1,10 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import {
   CHAT_BOT,
   LABOR_ATTORNEY_CHAT_HISTORY,
   LABOR_ATTORNEY_LIST,
   MYPAGE,
-} from "../constants/path";
+} from '../constants/path';
 
 export const Nav = () => {
   return (
@@ -24,7 +23,7 @@ export const Nav = () => {
       <div className="h-2.5 w-[1px] bg-stone-300"></div>
       <li>
         <Link to={LABOR_ATTORNEY_CHAT_HISTORY} className="px-6">
-          채팅기록
+          상담기록
         </Link>
       </li>
       <div className="h-2.5 w-[1px] bg-stone-300"></div>

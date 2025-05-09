@@ -103,7 +103,7 @@ export const LaborAttoneyCard = ({
         <h2 className="card-title">{userName}</h2>
         <p className="line-clamp-7">{description}</p>
         <div className="card-actions justify-end">
-          <Button onClick={goChat} text="채팅하기" />
+          <Button onClick={goChat} text="상담하기" />
         </div>
       </div>
     </div>

@@ -44,7 +44,7 @@ export const LaborChatHistoryCard = ({
         <div className="flex flex-row gap-8 ">
           <p className="line-clamp-2">{title}</p>
           <div className="card-actions w-fit justify-end shrink-0">
-            <Button onClick={goChat} text="이어서 채팅하기" />
+            <Button onClick={goChat} text="이어서 상담하기" />
           </div>
         </div>
       </div>
