@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { InputText } from '../components/InputText';
 import { Button } from '../components/Button';
-import { data, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FIND_ID, SIGN_UP } from '../constants/path';
 import { apiClient } from '../services/apiClient';
 
@@ -31,7 +31,8 @@ export const Login = () => {
 
     apiClient.post('/login', formData).then((res) => {
       localStorage.setItem('access', res.headers['access']);
-      localStorage.setItem('id', formData.username);
+      localStorage.setItem('role', res.data.role);
+      localStorage.setItem('id', res.data.userId);
 
       window.location.replace('/');
     });
