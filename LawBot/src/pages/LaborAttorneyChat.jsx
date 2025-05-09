@@ -1,36 +1,78 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Client, Stomp } from '@stomp/stompjs';
-import send from "../assets/chatSend.png";
-import { baseURL, wsBaseURL } from "../constants/baseURL";
-import { apiClient } from "../services/apiClient";
-import SockJS from "sockjs-client";
+import { useEffect, useRef, useState } from 'react';
+import { Client } from '@stomp/stompjs';
+import send from '../assets/chatSend.png';
+import { baseURL, wsBaseURL } from '../constants/baseURL';
+import { apiClient } from '../services/apiClient';
+import SockJS from 'sockjs-client';
+import { useParams } from 'react-router-dom';
+import useUserData from '../constants/hooks/useUserData';
 
 export const LaborAttorneyChat = () => {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const stomptRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const conversationId = 28;
-  const userId = 1;
-  
+  const params = useParams();
+
+  const [conversationId, setConversationId] = useState();
+  const { userId } = useUserData();
+  const consaltantId = params.consaltantId;
+
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
+  // 기존 채팅
+  useEffect(() => {
+    if (userId && consaltantId) {
+      makeNewConversation(); // 채팅방 id 가져오기
+    }
+    return () => disconnect();
+  }, [userId, consaltantId]);
+
+  useEffect(() => {
+    if (conversationId) {
+      getMessages(); // 기존 메세지
+      connect(); // 웹소켓 연결
+    }
+  }, [conversationId]);
+
+  // 새 채팅방 생성 : 이미 있는 방이면 기존 채팅방
+  const makeNewConversation = () => {
+    apiClient
+      .post(
+        `/api/conversations?userId=${userId}&title=${'제목'}&type=CONSULTANT&consultantId=${consaltantId}`,
+      )
+      .then((res) => {
+        setConversationId(res.data.id);
+        console.log(res);
+      });
+  };
+
+  const getMessages = async () => {
+    const oldmessage = await apiClient.get(
+      baseURL +
+        `/api/conversations/${conversationId}?accessorId=${userId}&isConsultant=false`,
+    );
+    const message = oldmessage.data.messages;
+    setMessages(message);
+    connect();
+  };
+
   const connect = () => {
-   const stompClient = new Client({
+    const stompClient = new Client({
       // SockJS를 사용하는 WebSocket 팩토리 함수
       webSocketFactory: () => new SockJS(wsBaseURL),
-  
+
       // 자동 재연결 설정 (밀리초 단위)
       reconnectDelay: 5000,
-  
+
       // 연결 성공 시 실행
       onConnect: (frame) => {
         console.log('Connected: ' + frame);
-  
+
         // 에러 구독
         stompClient.subscribe('/topic/errors', (message) => {
           console.error('WebSocket 에러:', message.body);
@@ -38,94 +80,79 @@ export const LaborAttorneyChat = () => {
         });
 
         // 채팅 메세지 구독
-        stompClient.subscribe(`/topic/conversations/28`, function (messageOutput) {
-          const message = JSON.parse(messageOutput.body);
+        stompClient.subscribe(
+          `/topic/conversations/${conversationId}`,
+          function (messageOutput) {
+            const message = JSON.parse(messageOutput.body);
 
-          addMessage(message);
-          markMessageAsRead(message.id);
-
-      });
+            addMessage(message);
+            markMessageAsRead(message.id);
+          },
+        );
       },
-  
+
       // 연결 실패 또는 끊겼을 때 실행
       onStompError: (frame) => {
         console.error('STOMP 에러:', frame.headers['message']);
         alert('연결에 실패했습니다. 서버가 실행 중인지 확인하세요.');
       },
-
     });
-  
+
     stompClient.activate();
     stomptRef.current = stompClient;
-  }
+  };
 
   const disconnect = () => {
-    if(stomptRef.current != null){
+    if (stomptRef.current != null) {
       stomptRef.current.deactivate();
     }
-  }
-
- 
-
+  };
 
   // 메세지 발행
   const sendMessage = () => {
-    if (input.trim() === "") return; // 빈 문자열 방지
+    if (input.trim() === '') return; // 빈 문자열 방지
     // 메시지 발행 로직 (예: stompClient.send(...) 등)
-    console.log("메시지 전송:", input);
 
     const chatMessage = {
       conversationId: conversationId,
       senderId: userId,
       content: input,
-      fromUser: true  // 노무사가 보내는 메시지
+      fromUser: true, // 노무사가 보내는 메시지
     };
 
-    console.log(stomptRef.current);
     stomptRef.current.publish({
-      destination: "/app/chat" ,
-      body: JSON.stringify(chatMessage)
+      destination: '/app/chat',
+      body: JSON.stringify(chatMessage),
     });
 
-    setInput(""); // 입력창 초기화
-  }
+    console.log('메시지 전송:', input);
+    setInput(''); // 입력창 초기화
+  };
 
   const addMessage = (message) => {
-    setMessages(prevMessages => {
+    setMessages((prevMessages) => {
       // 이미 동일한 id의 메시지가 있는 경우 추가하지 않음(두번 호출 방지)
-      if (prevMessages.some(m => m.id === message.id)) {
-          return prevMessages;
+      if (prevMessages.some((m) => m.id === message.id)) {
+        return prevMessages;
       }
       return [...prevMessages, message];
     });
-  }
+  };
 
-   // 메시지 읽음 처리
-   function markMessageAsRead(messageId) {
+  // 메시지 읽음 처리
+  function markMessageAsRead(messageId) {
     if (stomptRef.current != null) {
       const readRequest = {
         messageId: messageId,
         conversationId: conversationId,
-        readerId: userId
-      }
+        readerId: userId,
+      };
       stomptRef.current.publish({
-        destination: "/app/chat.read" ,
-        body: JSON.stringify(readRequest)
+        destination: '/app/chat.read',
+        body: JSON.stringify(readRequest),
       });
     }
-}
-
-  const getMessages = async () => {
-   const oldmessage = await apiClient.get(baseURL + `/api/conversations/${conversationId}?accessorId=${userId}`)
-    const message = oldmessage.data.messages;
-    setMessages(message);
   }
-
-  useEffect(()=>{
-    connect();
-    getMessages();
-    return () => disconnect();
-  },[]);
 
   useEffect(() => {
     scrollToBottom();
@@ -137,13 +164,13 @@ export const LaborAttorneyChat = () => {
 
     const date = new Date(dateString);
     return date.toLocaleString('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
     });
-}
+  }
 
   return (
     <div className="mt-10 flex flex-row justify-between ">
@@ -152,29 +179,32 @@ export const LaborAttorneyChat = () => {
           {messages.map((msg, idx) =>
             msg.fromUser ? (
               <div className="chat chat-end self-end w-full" key={idx}>
-                <div className="chat-bubble bg-[#E2E2E2] text-black">{msg.content}</div>
-               {msg.read && <div className="chat-footer opacity-50">읽음</div>}
+                <div className="chat-bubble bg-[#E2E2E2] text-black">
+                  {msg.content}
+                </div>
+                {msg.read && <div className="chat-footer opacity-50">읽음</div>}
               </div>
             ) : (
-             
-
               <div className="chat chat-start" key={idx}>
-              <div className="chat-image avatar ">
-                <div className="w-10 rounded-full">
-                  <img
-                    alt="Tailwind CSS chat bubble component"
-                    src="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
-                  />
+                <div className="chat-image avatar ">
+                  <div className="w-10 rounded-full">
+                    <img
+                      alt="Tailwind CSS chat bubble component"
+                      src="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
+                    />
+                  </div>
+                </div>
+                <div className="chat-header">
+                  노무사이름
+                  <time className="text-xs opacity-50">
+                    {formatDate(msg.createdAt)}
+                  </time>
+                </div>
+                <div className="chat-bubble bg-[#653F21] text-white">
+                  {msg.content}
                 </div>
               </div>
-              <div className="chat-header">
-                노무사이름
-                <time className="text-xs opacity-50">{formatDate(msg.createdAt)}</time>
-              </div>
-              <div className="chat-bubble bg-[#653F21] text-white">{msg.content}</div>
-              
-              </div>
-            )
+            ),
           )}
           <div ref={messagesEndRef} className="h-20"></div>
         </div>
@@ -188,7 +218,7 @@ export const LaborAttorneyChat = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === 'Enter') {
                   e.preventDefault();
                   sendMessage();
                 }

@@ -22,7 +22,7 @@
   width: 30px;
   height: 100%;
   background-color: white;
-  animation: shiny 2.3s ease-in-out infinite;
+  animation: shiny 3s ease-in-out infinite;
 }
 
 .my-btn-main:hover {
