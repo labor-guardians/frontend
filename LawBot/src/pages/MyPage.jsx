@@ -1,27 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { BsPersonCircle } from "react-icons/bs";
 import { InputText } from "../components/InputText";
+import getUserData from "../constants/hooks/getUserData";
 
 export const MyPage = () => {
-  const [formData, setFormData] = useState({
-    image: String,
+  const { userId, access } = getUserData();
+  const [userData, setUserData] = useState({
+    userId: "",
+    userName: "",
+    email: "",
+    photo: "",
+    role:""
   });
   const [imageUrl, setImageUrl] = useState();
   const [selectedImg, setSelectedImg] = useState();
   const [emailClick, setEmailClick] = useState(false);
   const [pwsClick, setPwdClick] = useState(false);
 
-  //이미지 파일 업로르
+  //이미지 파일 업로드드
   const imageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setSelectedImg(imageUrl);
-      setFormData((prev) => ({
-        ...prev,
-        image: file,
-      }));
+      // setFormData((prev) => ({
+      //   ...prev,
+      //   image: file,
+      // }));
     }
   };
 
@@ -32,6 +38,8 @@ export const MyPage = () => {
       setPwdClick(true);
     }
   };
+
+  
   return (
     <>
       <div className="flex justify-center flex-col items-center">
@@ -61,14 +69,14 @@ export const MyPage = () => {
           최지원
         </div>
 
-        <div className="mt-[5vw]">
+        {/* <div className="mt-[5vw]">
           <textarea
             className="textarea bg-white border border-gray-300 p-2 rounded-md w-[30vw]"
             placeholder="소개글을 작성해주세요."
             value={formData.content}
             onChange={(e) => handleChange("content", e.target.value)}
           />
-        </div>
+        </div> */}
 
         <div className="mt-[3vw] w-[30vw] justify-center">
           <div className="flex flex-row justify-between text-[1.2vw]">
