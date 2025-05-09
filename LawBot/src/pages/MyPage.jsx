@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Button } from "../components/Button";
-import { BsPersonCircle } from "react-icons/bs";
-import { InputText } from "../components/InputText";
-import getUserData from "../constants/hooks/getUserData";
+import { useState } from 'react';
+import { Button } from '../components/Button';
+import { BsPersonCircle } from 'react-icons/bs';
+import { InputText } from '../components/InputText';
+import useUserData from '../constants/hooks/useUserData';
 
 export const MyPage = () => {
-  const { userId, access } = getUserData();
+  const { userId, access, role } = useUserData();
   const [userData, setUserData] = useState({
-    userId: "",
-    userName: "",
-    email: "",
-    photo: "",
-    role:""
+    userId: '',
+    userName: '',
+    email: '',
+    photo: '',
+    role: '',
   });
   const [imageUrl, setImageUrl] = useState();
   const [selectedImg, setSelectedImg] = useState();
@@ -32,14 +32,13 @@ export const MyPage = () => {
   };
 
   const changeBtnClickListener = (target) => {
-    if (target == "email") {
+    if (target == 'email') {
       setEmailClick(true);
-    } else if (target == "pwd") {
+    } else if (target == 'pwd') {
       setPwdClick(true);
     }
   };
 
-  
   return (
     <>
       <div className="flex justify-center flex-col items-center">
@@ -48,7 +47,7 @@ export const MyPage = () => {
             <BsPersonCircle
               size="15vw"
               color="#A5A5A5"
-              onClick={() => document.getElementById("fileInput").click()}
+              onClick={() => document.getElementById('fileInput').click()}
             />
           </div>
         ) : (
@@ -82,7 +81,7 @@ export const MyPage = () => {
           <div className="flex flex-row justify-between text-[1.2vw]">
             <div className="font-bold">이메일</div>
             <div>zziwonchoi@gmail.com</div>
-            <div onClick={() => changeBtnClickListener("email")}>
+            <div onClick={() => changeBtnClickListener('email')}>
               이메일 변경
             </div>
           </div>
@@ -96,12 +95,12 @@ export const MyPage = () => {
               <Button text="이메일 변경" />
             </div>
           ) : (
-            ""
+            ''
           )}
           <div className="flex flex-row justify-between text-[1.2vw] mt-[3vh]">
             <div className="font-bold">비밀번호</div>
             <div> </div>
-            <div onClick={() => changeBtnClickListener("pwd")}>
+            <div onClick={() => changeBtnClickListener('pwd')}>
               비밀번호 변경
             </div>
           </div>
@@ -113,7 +112,7 @@ export const MyPage = () => {
               <Button text="비밀번호 변경" />
             </div>
           ) : (
-            ""
+            ''
           )}
         </div>
       </div>
