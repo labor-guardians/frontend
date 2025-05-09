@@ -29,6 +29,7 @@ export const LaborAttorneyChatHistory = () => {
         {histories.map((history) => (
           <LaborChatHistoryCard
             id={history.id}
+            consultantId={history.consultant.userId}
             title={history.title}
             consultantName={history.consultant.userName}
             photo={history.consultant.photo}

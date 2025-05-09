@@ -4,11 +4,19 @@ import { Button } from './Button';
 import { BsPersonCircle } from 'react-icons/bs';
 import { baseURL } from '../constants/baseURL';
 
-export const LaborChatHistoryCard = ({ id, title, consultantName, photo }) => {
+export const LaborChatHistoryCard = ({
+  id,
+  consultantId,
+  title,
+  consultantName,
+  photo,
+}) => {
   const navigate = useNavigate();
 
   const goChat = () => {
-    navigate(`/${LABOR_ATTORNEY_CHAT}/${id}`);
+    navigate(`/${LABOR_ATTORNEY_CHAT}/${consultantId}`, {
+      state: { conversationId: id },
+    });
   };
 
   return (

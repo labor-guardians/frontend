@@ -4,97 +4,130 @@ import send from '../assets/chatSend.png';
 import { baseURL, wsBaseURL } from '../constants/baseURL';
 import { apiClient } from '../services/apiClient';
 import SockJS from 'sockjs-client';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import useUserData from '../constants/hooks/useUserData';
 
 export const LaborAttorneyChat = () => {
+  // ======================== 🔧 파라미터 & 유저 데이터 ========================
+  const params = useParams();
+  const consaltantId = params.consaltantId;
+  const { userId } = useUserData();
+  const location = useLocation();
+  const stateInfo = location.state;
+
+  // ======================== 🧠 상태 ========================
+  const [conversationId, setConversationId] = useState();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+
   const stomptRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const params = useParams();
 
-  const [conversationId, setConversationId] = useState();
-  const { userId } = useUserData();
-  const consaltantId = params.consaltantId;
-
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  // 기존 채팅
+  // ✅ 1. [최초 진입 시] state에서 conversationId가 넘어온 경우 → 기존 채팅방
   useEffect(() => {
-    if (userId && consaltantId) {
-      makeNewConversation(); // 채팅방 id 가져오기
+    if (stateInfo && stateInfo.conversationId) {
+      setConversationId(stateInfo.conversationId);
     }
+  }, []);
+
+  // ✅ 2. [유저 ID와 상담사 ID가 있고 기존 conversationId가 없는 경우] → 새 채팅방 생성
+  useEffect(() => {
+    if (conversationId == null && userId && consaltantId) {
+      makeNewConversation();
+    }
+
+    // 컴포넌트 unmount 시 disconnect
     return () => disconnect();
   }, [userId, consaltantId]);
 
+  // ✅ 3. conversationId가 세팅되면: 이전 메시지 가져오고, 웹소켓 연결
   useEffect(() => {
     if (conversationId) {
-      getMessages(); // 기존 메세지
+      getMessages(); // 과거 메시지 불러오기
       connect(); // 웹소켓 연결
     }
   }, [conversationId]);
 
-  // 새 채팅방 생성 : 이미 있는 방이면 기존 채팅방
-  const makeNewConversation = () => {
-    apiClient
-      .post(
-        `/api/conversations?userId=${userId}&title=${'제목'}&type=CONSULTANT&consultantId=${consaltantId}`,
-      )
-      .then((res) => {
-        setConversationId(res.data.id);
-        console.log(res);
-      });
+  // ======================== 📜 스크롤 아래로 자동 이동 ========================
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // ======================== 📲 메세지 발송 ========================
+  const sendMessage = () => {
+    if (input.trim() === '') return;
+
+    const chatMessage = {
+      conversationId: conversationId,
+      senderId: userId,
+      content: input,
+      fromUser: true,
+    };
+
+    stomptRef.current?.publish({
+      destination: '/app/chat',
+      body: JSON.stringify(chatMessage),
+    });
+
+    console.log('메시지 전송:', input);
+    setInput('');
   };
 
+  // ======================== 🧠 새로운 채팅방 생성 ========================
+  const makeNewConversation = async () => {
+    console.log('makeNewConversation');
+
+    try {
+      const res = await apiClient.post(
+        `/api/conversations?userId=${userId}&title=제목&type=CONSULTANT&consultantId=${consaltantId}`,
+      );
+      setConversationId(res.data.id);
+      console.log(res);
+    } catch (error) {
+      console.error('채팅방 생성 실패:', error);
+    }
+  };
+
+  // ======================== 📥 기존 메세지 가져오기 ========================
   const getMessages = async () => {
-    const oldmessage = await apiClient.get(
-      baseURL +
-        `/api/conversations/${conversationId}?accessorId=${userId}&isConsultant=false`,
-    );
-    const message = oldmessage.data.messages;
-    setMessages(message);
-    connect();
+    try {
+      const res = await apiClient.get(
+        `${baseURL}/api/conversations/${conversationId}?accessorId=${userId}&isConsultant=false`,
+      );
+      const message = res.data.messages;
+      setMessages(message);
+    } catch (error) {
+      console.error('메세지 불러오기 실패:', error);
+    }
   };
 
+  // ======================== 🔌 웹소켓 연결 ========================
   const connect = () => {
     const stompClient = new Client({
-      // SockJS를 사용하는 WebSocket 팩토리 함수
       webSocketFactory: () => new SockJS(wsBaseURL),
-
-      // 자동 재연결 설정 (밀리초 단위)
       reconnectDelay: 5000,
 
-      // 연결 성공 시 실행
       onConnect: (frame) => {
-        console.log('Connected: ' + frame);
+        console.log('Connected:', frame);
 
-        // 에러 구독
         stompClient.subscribe('/topic/errors', (message) => {
           console.error('WebSocket 에러:', message.body);
           alert('오류 발생: ' + message.body);
         });
 
-        // 채팅 메세지 구독
         stompClient.subscribe(
           `/topic/conversations/${conversationId}`,
-          function (messageOutput) {
+          (messageOutput) => {
             const message = JSON.parse(messageOutput.body);
-
             addMessage(message);
             markMessageAsRead(message.id);
           },
         );
       },
 
-      // 연결 실패 또는 끊겼을 때 실행
       onStompError: (frame) => {
         console.error('STOMP 에러:', frame.headers['message']);
-        alert('연결에 실패했습니다. 서버가 실행 중인지 확인하세요.');
+        alert('연결 실패: 서버 상태를 확인하세요.');
       },
     });
 
@@ -102,49 +135,19 @@ export const LaborAttorneyChat = () => {
     stomptRef.current = stompClient;
   };
 
+  // ======================== 🔌 소켓 연결 해제 ========================
   const disconnect = () => {
-    if (stomptRef.current != null) {
+    if (stomptRef.current) {
       stomptRef.current.deactivate();
     }
   };
 
-  // 메세지 발행
-  const sendMessage = () => {
-    if (input.trim() === '') return; // 빈 문자열 방지
-    // 메시지 발행 로직 (예: stompClient.send(...) 등)
-
-    const chatMessage = {
-      conversationId: conversationId,
-      senderId: userId,
-      content: input,
-      fromUser: true, // 노무사가 보내는 메시지
-    };
-
-    stomptRef.current.publish({
-      destination: '/app/chat',
-      body: JSON.stringify(chatMessage),
-    });
-
-    console.log('메시지 전송:', input);
-    setInput(''); // 입력창 초기화
-  };
-
-  const addMessage = (message) => {
-    setMessages((prevMessages) => {
-      // 이미 동일한 id의 메시지가 있는 경우 추가하지 않음(두번 호출 방지)
-      if (prevMessages.some((m) => m.id === message.id)) {
-        return prevMessages;
-      }
-      return [...prevMessages, message];
-    });
-  };
-
-  // 메시지 읽음 처리
-  function markMessageAsRead(messageId) {
-    if (stomptRef.current != null) {
+  // ======================== ✅ 메세지 읽음 처리 ========================
+  const markMessageAsRead = (messageId) => {
+    if (stomptRef.current) {
       const readRequest = {
-        messageId: messageId,
-        conversationId: conversationId,
+        messageId,
+        conversationId,
         readerId: userId,
       };
       stomptRef.current.publish({
@@ -152,16 +155,24 @@ export const LaborAttorneyChat = () => {
         body: JSON.stringify(readRequest),
       });
     }
-  }
+  };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  // ======================== 📌 메세지 추가 ========================
+  const addMessage = (message) => {
+    setMessages((prevMessages) => {
+      if (prevMessages.some((m) => m.id === message.id)) return prevMessages;
+      return [...prevMessages, message];
+    });
+  };
 
-  // 날짜 포맷팅
-  function formatDate(dateString) {
+  // ======================== 🧼 유틸 - 스크롤 ========================
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // ======================== 📅 날짜 포맷 ========================
+  const formatDate = (dateString) => {
     if (!dateString) return '';
-
     const date = new Date(dateString);
     return date.toLocaleString('ko-KR', {
       year: 'numeric',
@@ -170,10 +181,11 @@ export const LaborAttorneyChat = () => {
       hour: '2-digit',
       minute: '2-digit',
     });
-  }
+  };
 
+  // ======================== 🖼️ UI ========================
   return (
-    <div className="mt-10 flex flex-row justify-between ">
+    <div className="mt-10 flex flex-row justify-between">
       <div className="flex flex-col w-3xl relative m-auto">
         <div className="overflow-y-auto h-[calc(100vh-150px)] px-5 space-y-4">
           {messages.map((msg, idx) =>
@@ -186,10 +198,10 @@ export const LaborAttorneyChat = () => {
               </div>
             ) : (
               <div className="chat chat-start" key={idx}>
-                <div className="chat-image avatar ">
+                <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
                     <img
-                      alt="Tailwind CSS chat bubble component"
+                      alt="프로필 이미지"
                       src="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
                     />
                   </div>
@@ -206,9 +218,10 @@ export const LaborAttorneyChat = () => {
               </div>
             ),
           )}
-          <div ref={messagesEndRef} className="h-20"></div>
+          <div ref={messagesEndRef} className="h-20" />
         </div>
 
+        {/* 입력창 */}
         <div className="fixed bottom-0 left-0 right-0 pb-3 bg-white z-20 m-auto">
           <div className="flex items-center border-2 w-3xl border-[#653F21] rounded-lg bg-white h-[50px] px-3 mx-auto">
             <input
@@ -224,7 +237,7 @@ export const LaborAttorneyChat = () => {
                 }
               }}
             />
-            <button type="button">
+            <button type="button" onClick={sendMessage}>
               <img src={send} alt="send" className="w-5 h-5 ml-2" />
             </button>
           </div>
