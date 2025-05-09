@@ -1,17 +1,26 @@
-import React, { useEffect, useState, useRef } from "react";
-import send from "../assets/chatSend.png";
-import { apiClient } from "../services/apiClient";
-import ContextMenu from "../components/ContextMenu";
-import { Button } from "../components/Button";
+import React, { useEffect, useState, useRef } from 'react';
+import send from '../assets/chatSend.png';
+import { apiClient } from '../services/apiClient';
+import ContextMenu from '../components/ContextMenu';
+import { Button } from '../components/Button';
+import { BiEdit } from 'react-icons/bi';
+import { TypeAnimation } from 'react-type-animation';
+import { useNavigate } from 'react-router-dom';
+import { ClipLoader } from 'react-spinners';
+
 export const ChatBot = () => {
+  const [userId, setUserId] = useState();
   const [firstChat, setFirstChat] = useState(true);
   const curConversationIdRef = useRef(null);
+  const navigate = useNavigate();
   const [chatRooms, setChatRooms] = useState([]);
   const [chatList, setChatList] = useState([]);
-  const [sendMessage, setSendMessage] = useState("");
+  const [sendMessage, setSendMessage] = useState('');
   const [conversationId, setConversationId] = useState();
   const [editingRoomId, setEditingRoomId] = useState(null);
-  const [editedTitle, setEditedTitle] = useState("");
+  const [editedTitle, setEditedTitle] = useState('');
+  const [newChatFlag, setNewChatFlag] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [contextMenu, setContextMenu] = useState({
     visible: false,
     x: 0,
@@ -21,18 +30,23 @@ export const ChatBot = () => {
 
   const scrollRef = useRef();
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatList]);
 
   useEffect(() => {
-    fetchChatRooms();
-  }, []);
+    const userId = localStorage.getItem('id');
+    setUserId(userId);
+    fetchChatRooms(userId);
+  }, [curConversationIdRef]);
 
+  useEffect(() => {
+    setNewChatFlag(false);
+  }, []);
   //바깥 클릭 시 contextMenu 닫기
   useEffect(() => {
     const closeMenu = () => setContextMenu({ visible: false });
-    window.addEventListener("click", closeMenu);
-    return () => window.removeEventListener("click", closeMenu);
+    window.addEventListener('click', closeMenu);
+    return () => window.removeEventListener('click', closeMenu);
   }, []);
   const handleContextMenu = (e, roomId) => {
     e.preventDefault();
@@ -56,18 +70,18 @@ export const ChatBot = () => {
         null,
         {
           params: {
-            userId: "user123",
+            userId: userId,
             title: editedTitle,
           },
-        }
+        },
       );
       setChatRooms((prev) =>
         prev.map((room) =>
-          room.id === editingRoomId ? { ...room, title: editedTitle } : room
-        )
+          room.id === editingRoomId ? { ...room, title: editedTitle } : room,
+        ),
       );
       setEditingRoomId(null);
-      setEditedTitle("");
+      setEditedTitle('');
     } catch (err) {
       console.log(err);
     }
@@ -76,7 +90,7 @@ export const ChatBot = () => {
     try {
       const res = await apiClient.delete(`/api/conversations/${id}`, {
         params: {
-          userId: "user123",
+          userId: userId,
         },
       });
       setChatRooms((prev) => prev.filter((room) => room.id !== id));
@@ -85,12 +99,12 @@ export const ChatBot = () => {
     }
   };
   //지난 채팅 목록 불러오기
-  const fetchChatRooms = async () => {
-    setSendMessage("");
+  const fetchChatRooms = async (id) => {
+    setSendMessage('');
     try {
-      const res = await apiClient.get("/api/conversations/user/user123", {
+      const res = await apiClient.get(`/api/conversations/user/${id}`, {
         params: {
-          type: "BOT",
+          type: 'BOT',
         },
       });
       setChatRooms(res.data);
@@ -102,42 +116,44 @@ export const ChatBot = () => {
 
   //새 채팅 생성
   const sendChat = async () => {
+    setLoading(true);
     if (!sendMessage.trim()) return;
     const targetId = conversationId || curConversationIdRef.current;
     const isNewChat = !targetId;
     if (isNewChat) {
       setFirstChat(false);
+      setNewChatFlag(true);
     }
     const data = {
-      userId: "user123",
+      userId: userId,
       conversationId: targetId || null,
       message: sendMessage,
     };
-    console.log(targetId);
+    const userMsg = {
+      fromUser: true,
+      content: sendMessage,
+    };
+    setChatList((prev) => [...prev, userMsg]);
+    setSendMessage('');
     try {
-      setSendMessage("");
-      const res = await apiClient.post("/api/chat", data);
+      const res = await apiClient.post('/api/chat', data);
       if (res.status === 200) {
+        fetchChatRooms(userId);
         const { userMessage, botMessage } = res.data;
         console.log(res.data);
-        setChatList((prev) => [
-          ...prev,
-          {
-            fromUser: true,
-            content: userMessage.content,
-            createdAt: userMessage.createdAt,
-          },
-          {
-            fromUser: false,
-            content: botMessage.content,
-            createdAt: botMessage.createdAt,
-          },
-        ]);
+        const botMsg = {
+          fromUser: false,
+          content: botMessage.content,
+          createdAt: botMessage.createdAt,
+          animate: true,
+        };
+        setChatList((prev) => [...prev, botMsg]);
         if (isNewChat && res.data.conversationId) {
           setConversationId(res.data.conversationId);
           curConversationIdRef.current = res.data.conversationId;
         }
       }
+      setLoading(false);
     } catch (err) {
       console.log(err);
     }
@@ -148,7 +164,7 @@ export const ChatBot = () => {
     try {
       const res = await apiClient.get(`/api/conversations/${conversationId}`, {
         params: {
-          accessorId: "user123",
+          accessorId: userId,
           isConsultant: false,
         },
       });
@@ -157,6 +173,7 @@ export const ChatBot = () => {
         fromUser: msg.fromUser,
         content: msg.content,
         createdAt: msg.createdAt,
+        animate: false,
       }));
       setChatList(parsed);
       setConversationId(conversationId);
@@ -167,11 +184,17 @@ export const ChatBot = () => {
     }
   };
 
-  //채팅 목록 삭제
+  const curReload = () => {
+    setFirstChat(true);
+    navigate(0);
+  };
   return (
     <div className="mt-10 flex flex-row justify-between pr-20">
-      <div className="bg-white w-1/5">
-        <ul className="list rounded-box shadow-md bg-white">
+      <div className=" w-70">
+        <ul className="list round-full shadow-md ">
+          <div className="flex justify-end mt-5" onClick={() => curReload()}>
+            <BiEdit color="#653F21" size={20} />
+          </div>
           <li className="p-4 pb-2 text-xs opacity-60 tracking-wide text-center">
             지난기록
           </li>
@@ -201,7 +224,9 @@ export const ChatBot = () => {
                       />
                     </div>
                   ) : (
-                    <div>{room.title}</div>
+                    <div>
+                      <div>{room.title}</div>
+                    </div>
                   )}
                 </li>
               );
@@ -223,7 +248,7 @@ export const ChatBot = () => {
               value={sendMessage}
               onChange={(e) => setSendMessage(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
+                if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   sendChat();
                 }
@@ -241,21 +266,43 @@ export const ChatBot = () => {
               <div key={index} className="w-full my-2">
                 {chat.fromUser ? (
                   <div className="flex justify-end chat chat-end">
-                    <div className="chat-bubble bg-[#E2E2E2] text-black rounded-xl px-4 py-2 max-w-[70%]">
+                    <div className="chat-bubble bg-[#e7dfcc] text-black rounded-xl px-4 py-2 max-w-[70%]">
                       {chat.content}
                     </div>
                   </div>
                 ) : (
                   <div className="flex justify-center">
-                    <div className="bg-[#D3D3D3] text-black px-6 py-3 w-[80%] rounded-md shadow">
-                      {chat.content}
-                    </div>
+                    {loading ? (
+                      <div>
+                        {/* <ClipLoader
+                          color="#653F21"
+                          loading={loading}
+                          size={150}
+                          aria-label="Loading Spinner"
+                          data-testid="loader"
+                        /> */}
+                      </div>
+                    ) : (
+                      <div className="text-black px-6 py-3 w-[80%] rounded-md shadow whitespace-pre-line">
+                        {chat.animate ? (
+                          <TypeAnimation
+                            sequence={[chat.content]}
+                            wrapper="span"
+                            cursor={true}
+                            speed={50}
+                            style={{ display: 'inline-block' }}
+                          />
+                        ) : (
+                          chat.content
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             ))}
           </div>
-          <div className="fixed bottom-0 left-[15%] w-[80%]  pb-3  bg-white z-20">
+          <div className="fixed bottom-0 left-[15%] w-[80%]  pb-3 z-20">
             <div className="flex items-center border-2 border-[#653F21] rounded-lg bg-white w-[40vw] h-[50px] px-3 mx-auto">
               <input
                 type="text"
@@ -264,7 +311,7 @@ export const ChatBot = () => {
                 value={sendMessage}
                 onChange={(e) => setSendMessage(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
+                  if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendChat();
                   }

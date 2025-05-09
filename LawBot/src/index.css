@@ -57,5 +57,5 @@
 html,
 body {
   font-family: "Noto Sans KR";
-  @apply bg-white text-black p-3;
+  @apply bg-[#FEF9EB] text-black p-3;
 }

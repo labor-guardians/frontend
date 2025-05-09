@@ -9,7 +9,7 @@ import {
 
 export const Nav = () => {
   return (
-    <ul className="menu menu-vertical sm:menu-horizontal rounded-box flex items-center gap-2.5 bg-[#E2E2E2]">
+    <ul className="menu menu-vertical sm:menu-horizontal rounded-box flex items-center gap-2.5 bg-[#e7dfcc] ">
       <li className="relative">
         <Link to={CHAT_BOT} className="px-6">
           챗봇
