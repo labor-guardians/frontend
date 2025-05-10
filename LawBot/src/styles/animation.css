@@ -11,7 +11,8 @@
   font-weight: 700;
   border-radius: 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  filter: brightness(1);
 }
 
 .my-btn-main::before {
@@ -27,11 +28,12 @@
 
 .my-btn-main:hover {
   background-position: 100% 0;
-  moz-transition: all 0.4s ease-in-out;
-  -o-transition: all 0.4s ease-in-out;
-  -webkit-transition: all 0.4s ease-in-out;
-  transition: all 0.4s ease-in-out;
+  moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   background: linear-gradient(to right, #976946, #653f21);
+  filter: brightness(1.2);
 }
 
 .my-btn-main:active {
