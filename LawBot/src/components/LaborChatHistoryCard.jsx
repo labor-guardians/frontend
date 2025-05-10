@@ -5,6 +5,7 @@ import { BsPersonCircle } from 'react-icons/bs';
 import { baseURL } from '../constants/baseURL';
 
 export const LaborChatHistoryCard = ({
+  loading,
   id,
   otherUserId,
   title,

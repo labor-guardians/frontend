@@ -79,9 +79,9 @@ export const Header = () => {
         </div>
 
         <Link className="flex flex-row">
-          <img src={logo} className="w-14 md:w-18 h-fit  ml-1" />
-          <div className="flex flex-col justify-center text-[#653F21] font-bold text-xl md:text-2xl ml-3 font-['KanitBold']">
-            <p className="font-bold">노동</p>
+          <img src={logo} className="w-14 md:w-18 h-fit " />
+          <div className="flex flex-col justify-center text-[#653F21] font-bold text-xl md:text-2xl ml-1 font-['KanitBold'] leading-7">
+            <p className="font-extrabold">노동</p>
             <p>LawBot</p>
           </div>
         </Link>
@@ -92,7 +92,7 @@ export const Header = () => {
       <div className="navbar-end">
         {id ? (
           <button
-            className="btn btn-outline text-xs sm:text-sm md:text-base lg:text-lg p-2 sm:p-3 border-[#593315] text-[#593315]"
+            className="btn btn-outline text-xs sm:text-sm md:text-base lg:text-lg  border-[#593315] text-[#593315] hover:bg-[#f5eedc]"
             onClick={logout}
           >
             Logout
@@ -104,8 +104,6 @@ export const Header = () => {
             sm:text-sm
             md:text-base
             lg:text-lg
-            p-2
-            sm:p-3
             onClick={goToLogin}
           />
         )}
