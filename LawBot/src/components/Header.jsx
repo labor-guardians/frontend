@@ -92,7 +92,7 @@ export const Header = () => {
       <div className="navbar-end">
         {id ? (
           <button
-            className="btn btn-outline text-xs sm:text-sm md:text-base lg:text-lg  border-[#593315] text-[#593315] hover:bg-[#f5eedc]"
+            className="btn btn-outline text-xs sm:text-sm md:text-base lg:text-lg border-[#593315] text-[#593315] bg-[#FEF9EB] hover:bg-[#F7EED2]"
             onClick={logout}
           >
             Logout

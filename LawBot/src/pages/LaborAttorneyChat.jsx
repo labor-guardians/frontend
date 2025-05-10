@@ -7,7 +7,8 @@ import SockJS from 'sockjs-client';
 import { useLocation } from 'react-router-dom';
 import useUserData from '../constants/hooks/useUserData';
 import { CONSULTANT, USER } from '../constants/role';
-import { BsPersonCircle } from 'react-icons/bs';
+import { MyChatBubble } from '../components/MyChatBubble';
+import { OtherChatBubble } from '../components/OtherChatBubble';
 
 export const LaborAttorneyChat = () => {
   // ======================== 🔧 파라미터 & 유저 데이터 ========================
@@ -281,73 +282,76 @@ export const LaborAttorneyChat = () => {
   };
 
   // ======================== 📅 날짜 포맷 ========================
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   const isMyMessage = (fromUser, role) =>
     (fromUser && role === USER) || (!fromUser && role === CONSULTANT);
+
+  // 메세지 그룹핑
+  const groupMessagesByTime = (messages) => {
+    if (!Array.isArray(messages) || messages.length <= 0) return []; // 빈 배열 반환
+
+    const groupedMessages = [];
+    let currentGroup = [];
+    let lastTime = null;
+    let lastFromUser = null;
+    let lastReadStatus = null; // read 상태를 추적
+
+    messages.forEach((msg) => {
+      const messageDate = new Date(msg.createdAt);
+
+      // 연도, 월, 일, 시간, 분만 추출
+      const messageTime = `${messageDate.getFullYear()}-${String(messageDate.getMonth() + 1).padStart(2, '0')}-${String(messageDate.getDate()).padStart(2, '0')} ${String(messageDate.getHours()).padStart(2, '0')}:${String(messageDate.getMinutes()).padStart(2, '0')}`;
+
+      // time, fromUser, read 상태가 다르면 그룹을 새로 시작
+      if (
+        messageTime !== lastTime ||
+        msg.fromUser !== lastFromUser ||
+        msg.read !== lastReadStatus
+      ) {
+        if (currentGroup.length) groupedMessages.push(currentGroup);
+        currentGroup = [msg]; // 새로운 그룹 시작
+        lastTime = messageTime;
+        lastFromUser = msg.fromUser;
+        lastReadStatus = msg.read;
+      } else {
+        currentGroup.push(msg); // 같은 그룹에 메시지 추가
+      }
+    });
+
+    // 마지막 그룹 추가
+    if (currentGroup.length) groupedMessages.push(currentGroup);
+
+    console.log(groupedMessages); // 디버깅용
+    return groupedMessages;
+  };
 
   // ======================== 🖼️ UI ========================
   return (
     <div className="mt-10 flex flex-row justify-between">
       <div className="flex flex-col w-3xl relative m-auto">
         <div className="overflow-y-auto h-[calc(100vh-150px)] px-5 space-y-4">
-          {messages.map((msg, idx) => {
-            return isMyMessage(msg.fromUser, role) ? (
-              <div className="chat chat-end self-end w-full" key={idx}>
-                <div className="chat-bubble bg-[#E2E2E2] text-black">
-                  {msg.content}
-                </div>
-                {msg.read && <div className="chat-footer opacity-50">읽음</div>}
-              </div>
-            ) : (
-              <div className="chat chat-start" key={idx}>
-                <div className="chat-image avatar">
-                  <div className="w-10 rounded-full">
-                    {role == USER ? (
-                      conversationInfo.consultant.photo ? (
-                        <img
-                          alt="프로필 이미지"
-                          src={baseURL + conversationInfo.consultant.photo}
-                          className="w-full"
-                        />
-                      ) : (
-                        <BsPersonCircle color="#A5A5A5" size={40} />
-                      )
-                    ) : conversationInfo.user.photo ? (
-                      <img
-                        alt="프로필 이미지"
-                        src={baseURL + conversationInfo.user.photo}
-                        className="w-full"
-                      />
-                    ) : (
-                      <BsPersonCircle color="#A5A5A5" size={40} />
-                    )}
-                  </div>
-                </div>
-                <div className="chat-header">
-                  {role == USER
-                    ? conversationInfo.consultant.userName
-                    : conversationInfo.user.userName}
-                  <time className="text-xs opacity-50">
-                    {formatDate(msg.createdAt)}
-                  </time>
-                </div>
-                <div className="chat-bubble bg-[#653F21] text-white">
-                  {msg.content}
-                </div>
-              </div>
-            );
-          })}
+          {groupMessagesByTime(messages).map((group, idx) => (
+            <div key={idx}>
+              {/* 그룹 내 메시지 표시 */}
+              {group.map((msg, index) =>
+                isMyMessage(msg.fromUser, role) ? (
+                  <MyChatBubble
+                    key={index}
+                    index={index}
+                    msg={msg}
+                    length={group.length}
+                  />
+                ) : (
+                  <OtherChatBubble
+                    key={index}
+                    index={index}
+                    conversationInfo={conversationInfo}
+                    msg={msg}
+                  />
+                ),
+              )}
+            </div>
+          ))}
           <div ref={messagesEndRef} className="h-20" />
         </div>
 
@@ -356,7 +360,7 @@ export const LaborAttorneyChat = () => {
           <div className="flex items-center border-2 w-3xl border-[#653F21] rounded-lg bg-white h-[50px] px-3 mx-auto">
             <input
               type="text"
-              placeholder="LawBot에게 물어보세요"
+              placeholder="전문 노무사에게 물어보세요"
               className="flex-grow outline-none bg-white"
               value={input}
               onChange={(e) => setInput(e.target.value)}
