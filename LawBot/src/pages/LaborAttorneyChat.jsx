@@ -24,6 +24,49 @@ export const LaborAttorneyChat = () => {
   const stomptRef = useRef(null);
   const messagesEndRef = useRef(null);
 
+  // 상태 관리: 탭이 활성화되어 있는지 여부
+  const isTabFocused = useRef(true);
+  const [isTabFoucsedState, setIsTabFoucsedState] = useState(true);
+
+  useEffect(() => {
+    // focus 이벤트: 탭이 활성화되었을 때
+    const handleFocus = () => {
+      isTabFocused.current = true;
+      setIsTabFoucsedState(true); // 상태 업데이트
+    };
+
+    // blur 이벤트: 탭이 비활성화되었을 때
+    const handleBlur = () => {
+      isTabFocused.current = false;
+      setIsTabFoucsedState(false); // 상태 업데이트
+    };
+
+    // visibilitychange 이벤트: 탭의 가시성 상태 변경 시
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        handleFocus();
+      } else {
+        handleBlur();
+      }
+    };
+
+    // 이벤트 리스너 추가
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    initRead();
+  }, [isTabFoucsedState]);
+
   // ✅ 1. [최초 진입 시] state에서 conversationId가 넘어온 경우 → 기존 채팅방
   useEffect(() => {
     if (stateInfo) {
@@ -41,17 +84,20 @@ export const LaborAttorneyChat = () => {
     if (conversationId == null && userId && otherUserId) {
       makeNewConversation();
     }
-
-    // 컴포넌트 unmount 시 disconnect
-    return () => disconnect();
   }, [userId, otherUserId]);
 
   // ✅ 3. conversationId가 세팅되면: 이전 메시지 가져오고, 웹소켓 연결
   useEffect(() => {
-    if (conversationId) {
-      getMessages(); // 과거 메시지 불러오기
-      connect(); // 웹소켓 연결
-    }
+    const init = async () => {
+      if (conversationId) {
+        await getMessages(); // 과거 메시지 불러오기
+        connect(); // 웹소켓 연결
+      }
+    };
+
+    init();
+    // 컴포넌트 unmount 시 disconnect
+    return () => disconnect();
   }, [conversationId]);
 
   // ======================== 📜 스크롤 아래로 자동 이동 ========================
@@ -75,14 +121,37 @@ export const LaborAttorneyChat = () => {
       body: JSON.stringify(chatMessage),
     });
 
-    console.log('메시지 전송:', input);
     setInput('');
+  };
+
+  // 상대방 채팅 읽음처리
+  const initRead = () => {
+    console.log('initRead');
+    setMessages((prevMessages) => {
+      const updatedMessages = [...prevMessages]; // 상태를 직접 수정하지 않기 위해 복사본 사용
+
+      // 뒤에서부터 순회
+      for (let i = updatedMessages.length - 1; i >= 0; i--) {
+        const message = updatedMessages[i];
+
+        // 상대방이 보낸 메시지이고, 아직 읽지 않은 메시지만 처리
+        if (!isMyMessage(message.fromUser, role) && !message.isRead) {
+          markMessageAsRead(message.id); // 읽음 처리 함수 호출
+          updatedMessages[i] = { ...message, isRead: true }; // 읽음 상태 변경
+        }
+
+        // 만약 읽음 처리된 메시지를 만나면 루프 종료
+        if (message.isRead) {
+          break; // 읽음 처리된 메시지 이후는 더 이상 진행하지 않음
+        }
+      }
+
+      return updatedMessages; // 읽음 처리가 완료된 메시지 배열 반환
+    });
   };
 
   // ======================== 🧠 새로운 채팅방 생성 ========================
   const makeNewConversation = async () => {
-    console.log('makeNewConversation');
-
     // 본인이 노무사이면 반대로
     const requestUserId = role == USER ? userId : otherUserId;
     const consultantId = role == USER ? otherUserId : userId;
@@ -92,7 +161,6 @@ export const LaborAttorneyChat = () => {
         `/api/conversations?userId=${requestUserId}&title=제목&type=CONSULTANT&consultantId=${consultantId}`,
       );
       setConversationId(res.data.id);
-      console.log(res);
     } catch (error) {
       console.error('채팅방 생성 실패:', error);
     }
@@ -104,8 +172,8 @@ export const LaborAttorneyChat = () => {
       const res = await apiClient.get(
         `${baseURL}/api/conversations/${conversationId}?accessorId=${userId}&isConsultant=${role == CONSULTANT}`,
       );
-      const message = res.data.messages;
-      setMessages(message);
+      const resMesaage = res.data.messages;
+      setMessages(resMesaage);
     } catch (error) {
       console.error('메세지 불러오기 실패:', error);
     }
@@ -132,10 +200,10 @@ export const LaborAttorneyChat = () => {
             const message = JSON.parse(messageOutput.body);
             addMessage(message);
 
-            console.log(message);
+            // 상대방이 보낸 메세지만 읽음
+            console.log(isTabFocused.current);
 
-            // 내가 보낸 메세지만 채팅
-            if (!isMyMessage(message.fromUser, role)) {
+            if (isTabFocused.current && !isMyMessage(message.fromUser, role)) {
               markMessageAsRead(message.id);
             }
           },
@@ -149,6 +217,8 @@ export const LaborAttorneyChat = () => {
             updateReadStatus(message);
           },
         );
+
+        initRead();
       },
 
       onStompError: (frame) => {
