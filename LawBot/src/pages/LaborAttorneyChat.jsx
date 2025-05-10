@@ -7,6 +7,7 @@ import SockJS from 'sockjs-client';
 import { useLocation } from 'react-router-dom';
 import useUserData from '../constants/hooks/useUserData';
 import { CONSULTANT, USER } from '../constants/role';
+import { BsPersonCircle } from 'react-icons/bs';
 
 export const LaborAttorneyChat = () => {
   // ======================== 🔧 파라미터 & 유저 데이터 ========================
@@ -17,6 +18,7 @@ export const LaborAttorneyChat = () => {
   // ======================== 🧠 상태 ========================
   const [conversationId, setConversationId] = useState();
   const [otherUserId, setOtherUserId] = useState();
+  const [conversationInfo, setConversationInfo] = useState();
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -161,6 +163,7 @@ export const LaborAttorneyChat = () => {
         `/api/conversations?userId=${requestUserId}&title=제목&type=CONSULTANT&consultantId=${consultantId}`,
       );
       setConversationId(res.data.id);
+      setConversationInfo(res.data);
     } catch (error) {
       console.error('채팅방 생성 실패:', error);
     }
@@ -174,6 +177,7 @@ export const LaborAttorneyChat = () => {
       );
       const resMesaage = res.data.messages;
       setMessages(resMesaage);
+      setConversationInfo(res.data);
     } catch (error) {
       console.error('메세지 불러오기 실패:', error);
     }
@@ -309,14 +313,31 @@ export const LaborAttorneyChat = () => {
               <div className="chat chat-start" key={idx}>
                 <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
-                    <img
-                      alt="프로필 이미지"
-                      src="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
-                    />
+                    {role == USER ? (
+                      conversationInfo.consultant.photo ? (
+                        <img
+                          alt="프로필 이미지"
+                          src={baseURL + conversationInfo.consultant.photo}
+                          className="w-full"
+                        />
+                      ) : (
+                        <BsPersonCircle color="#A5A5A5" size={40} />
+                      )
+                    ) : conversationInfo.user.photo ? (
+                      <img
+                        alt="프로필 이미지"
+                        src={baseURL + conversationInfo.user.photo}
+                        className="w-full"
+                      />
+                    ) : (
+                      <BsPersonCircle color="#A5A5A5" size={40} />
+                    )}
                   </div>
                 </div>
                 <div className="chat-header">
-                  상대방이름
+                  {role == USER
+                    ? conversationInfo.consultant.userName
+                    : conversationInfo.user.userName}
                   <time className="text-xs opacity-50">
                     {formatDate(msg.createdAt)}
                   </time>
