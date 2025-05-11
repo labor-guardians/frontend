@@ -32,7 +32,7 @@ export const SignUpLabor = () => {
       setFormData((prev) => ({ ...prev, password: value }));
       setValidPwd(value === formData.passwordCheck);
     } else if (label === 'passwordCheck') {
-      setCheckPwd(value);
+      setFormData((prev) => ({ ...prev, passwordCheck: value }));
       setValidPwd(value === formData.password);
     } else {
       setFormData((prev) => ({ ...prev, [label]: value }));
@@ -142,25 +142,32 @@ export const SignUpLabor = () => {
       }));
 
     const fd = new FormData();
+    const consultantJson = {
+      userid: formData.userid,
+      password: formData.password,
+      username: formData.username,
+      email: formData.email,
+      description: formData.description,
+    };
+
+    console.log('💬 JSON.stringify 전송 내용:', consultantJson);
+
     fd.append(
       'ConsultantData',
-      new Blob(
-        [
-          JSON.stringify({
-            userid: formData.userid,
-            password: formData.password,
-            username: formData.username,
-            email: formData.email,
-            description: formData.description,
-          }),
-        ],
-        { type: 'application/json' },
-      ),
+      new Blob([JSON.stringify(consultantJson)], {
+        type: 'application/json',
+      }),
     );
     fd.append('license', formData.license);
 
+    // 👇 실제 FormData 내부 확인
+    for (let [key, value] of fd.entries()) {
+      console.log(`📦 FormData - ${key}:`, value);
+    }
     try {
-      const res = await axios.post(`${baseURL}/api/auth/join/consultant`, fd);
+      const res = await apiClient.post(`/api/auth/join/consultant`, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       if (res.status === 200) {
         alert('회원가입 완료');
         navigate(LOGIN);
