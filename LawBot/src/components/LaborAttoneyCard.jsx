@@ -43,12 +43,6 @@ export const LaborAttoneyCard = ({
         html: '노무사 간 채팅은 시스템 정책상 차단되어 있어요.<br/>양해 부탁드립니다.',
         icon: 'error',
         confirmButtonText: '확인',
-        showClass: {
-          popup: 'animate__animated animate__fadeInUp animate__faster',
-        },
-        hideClass: {
-          popup: 'animate__animated animate__fadeOutDown animate__faster',
-        },
       });
     } else {
       // 로그인하지 않은 경우
@@ -67,12 +61,6 @@ export const LaborAttoneyCard = ({
           showCancelButton: true,
           confirmButtonText: '예',
           cancelButtonText: '취소',
-          showClass: {
-            popup: 'animate__animated animate__fadeInUp animate__faster',
-          },
-          hideClass: {
-            popup: 'animate__animated animate__fadeOutDown animate__faster',
-          },
         })
         .then((result) => {
           if (result.isConfirmed) {

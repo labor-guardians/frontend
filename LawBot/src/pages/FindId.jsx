@@ -1,43 +1,88 @@
 import { useRef, useState } from 'react';
 import { InputText } from '../components/InputText';
 import { Button } from '../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FIND_PASSWORD, LOGIN } from '../constants/path';
+import { apiClient } from '../services/apiClient';
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2';
+
+const MySwal = withReactContent(Swal);
 
 export const FindId = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    name: null,
     email: null,
-    number: null,
+    code: null,
   });
-
-  const [isNumberError, setNumberError] = useState(false);
-  const [isSendNumber, setSendNumber] = useState(false);
-  const nameInputRef = useRef(null);
+  const [errors, setErrors] = useState({
+    global: '',
+  });
+  const [isEmailError, setEmailError] = useState(false);
+  const [isCodeError, setCodeError] = useState(false);
+  const [isSendCode, setSendCode] = useState(false);
   const emailInputRef = useRef(null);
-  const numberInputRef = useRef(null);
+  const codeInputRef = useRef(null);
 
-  const sendNumber = () => {
-    if (!formData.name) {
-      nameInputRef.current.focus();
-      return;
-    } else if (!formData.email) {
+  const sendNumber = async () => {
+    if (!formData.email) {
+      setErrors((prev) => ({ ...prev, global: '모든 항목을 입력해주세요.' }));
       emailInputRef.current.focus();
       return;
     }
+    setErrors((prev) => ({ ...prev, global: '' }));
+
+    apiClient
+      .post('/api/auth/sendEmailForUserId', {
+        email: formData.email,
+      })
+      .then(() => {
+        setSendCode(true);
+        setEmailError(false);
+      })
+      .catch(() => {
+        setEmailError(true);
+      });
 
     // api 성공시
-    setSendNumber(true);
   };
 
-  const findId = (e) => {
+  const findId = async (e) => {
     e.preventDefault();
-    if (!formData.authenticationNumber) {
-      numberInputRef.current.focus();
+    if (!formData.code) {
+      setErrors((prev) => ({ ...prev, global: '모든 항목을 입력해주세요.' }));
+      codeInputRef.current.focus();
       return;
     }
 
-    alert('TODO:로그인');
+    const res = await apiClient.post(
+      '/api/auth/verifyEmailForUserId',
+      formData,
+    );
+
+    if (res.data == '인증 실패') {
+      setCodeError(true);
+    } else {
+      setCodeError(false);
+      const swalWithBootstrapButtons = MySwal.mixin({
+        customClass: {
+          confirmButton:
+            'btn bg-[#653F21] text-white me-1 px-5 hover:bg-[#593315]',
+        },
+        buttonsStyling: false,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: '아이디를 성공적으로 찾았습니다.',
+          text: '아이디: ' + res.data,
+          icon: 'success',
+          confirmButtonText: '확인',
+        })
+        .then(() => {
+          navigate('/login');
+        });
+    }
   };
 
   const handleChange = (e) => {
@@ -63,31 +108,39 @@ export const FindId = () => {
             isValidation={formData.email != ''}
             validationText={'이메일을 입력해주세요'}
             ref={emailInputRef}
-            readOnly={isSendNumber}
+            readOnly={isSendCode}
           />
           <Button text="인증번호 발송" onClick={sendNumber} />
         </div>
-        {isSendNumber && (
+        {isEmailError && (
+          <p className="text-red-500 text-sm">
+            이 이메일로 가입된 계정이 없습니다.
+          </p>
+        )}
+        {isSendCode && (
           <InputText
             placeholder="인증번호"
             label="인증번호"
             onChange={handleChange}
-            value={formData.number || ''}
-            name="number"
-            isValidation={formData.number != ''}
+            value={formData.code || ''}
+            name="code"
+            isValidation={formData.code != ''}
             validationText={'인증번호를 입력해주세요'}
-            ref={numberInputRef}
+            ref={codeInputRef}
           />
         )}
-        {isNumberError && (
+        {isCodeError && (
           <p className="text-red-500 text-sm">인증번호가 틀렸습니다.</p>
+        )}
+        {errors.global && (
+          <p className="text-red-500 text-center mb-4">{errors.global}</p>
         )}
         <Button
           text={'아이디 찾기'}
           size={'w-full mt-5'}
           onClick={findId}
           type={'submit'}
-          disabled={!formData.name || !formData.email || !formData.number}
+          // disabled={!formData.name || !formData.email || !formData.code}
         />
       </form>
 
