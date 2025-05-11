@@ -12,6 +12,7 @@ const MySwal = withReactContent(Swal);
 export const FindId = () => {
   const navigate = useNavigate();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: null,
     code: null,
@@ -33,17 +34,18 @@ export const FindId = () => {
     }
     setErrors((prev) => ({ ...prev, global: '' }));
 
+    setSendCode(true);
     apiClient
       .post('/api/auth/sendEmailForUserId', {
         email: formData.email,
       })
       .then(() => {
-        setSendCode(true);
         setEmailError(false);
       })
       .catch(() => {
         setEmailError(true);
-      });
+      })
+      .finally(() => {});
 
     // api 성공시
   };
@@ -55,11 +57,13 @@ export const FindId = () => {
       codeInputRef.current.focus();
       return;
     }
-
+    setErrors((prev) => ({ ...prev, global: '' }));
+    setIsLoading(true);
     const res = await apiClient.post(
       '/api/auth/verifyEmailForUserId',
       formData,
     );
+    setIsLoading(false);
 
     if (res.data == '인증 실패') {
       setCodeError(true);
@@ -110,7 +114,11 @@ export const FindId = () => {
             ref={emailInputRef}
             readOnly={isSendCode}
           />
-          <Button text="인증번호 발송" onClick={sendNumber} />
+          <Button
+            text="인증번호 발송"
+            disabled={isSendCode}
+            onClick={sendNumber}
+          />
         </div>
         {isEmailError && (
           <p className="text-red-500 text-sm">
@@ -124,8 +132,6 @@ export const FindId = () => {
             onChange={handleChange}
             value={formData.code || ''}
             name="code"
-            isValidation={formData.code != ''}
-            validationText={'인증번호를 입력해주세요'}
             ref={codeInputRef}
           />
         )}
@@ -136,11 +142,17 @@ export const FindId = () => {
           <p className="text-red-500 text-center mb-4">{errors.global}</p>
         )}
         <Button
-          text={'아이디 찾기'}
+          text={
+            isLoading ? (
+              <span className="loading loading-dots loading-xs"></span>
+            ) : (
+              '아이디 찾기'
+            )
+          }
           size={'w-full mt-5'}
           onClick={findId}
           type={'submit'}
-          // disabled={!formData.name || !formData.email || !formData.code}
+          disabled={!isSendCode}
         />
       </form>
 

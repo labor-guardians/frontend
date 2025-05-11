@@ -15,6 +15,7 @@ export const Login = () => {
     password: false,
   });
   const [isLoginError, setIsLoginError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const usernameInputRef = useRef(null);
   const passwordInputRef = useRef(null);
@@ -29,13 +30,22 @@ export const Login = () => {
       return;
     }
 
-    apiClient.post('/login', formData).then((res) => {
-      localStorage.setItem('access', res.headers['access']);
-      localStorage.setItem('role', res.data.role);
-      localStorage.setItem('id', res.data.userId);
+    setIsLoading(true);
+    apiClient
+      .post('/login', formData)
+      .then((res) => {
+        localStorage.setItem('access', res.headers['access']);
+        localStorage.setItem('role', res.data.role);
+        localStorage.setItem('id', res.data.userId);
 
-      window.location.replace('/');
-    });
+        window.location.replace('/');
+      })
+      .catch(() => {
+        setIsLoginError(true);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleChange = (e) => {
@@ -86,7 +96,13 @@ export const Login = () => {
           </p>
         )}
         <Button
-          text={'로그인'}
+          text={
+            isLoading ? (
+              <span className="loading loading-dots loading-xs"></span>
+            ) : (
+              '로그인'
+            )
+          }
           size={'w-full mt-5'}
           onClick={login}
           type={'submit'}
