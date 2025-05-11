@@ -33,7 +33,7 @@
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   background: linear-gradient(to right, #976946, #653f21);
-  filter: brightness(1.2);
+  filter: brightness(1.3);
 }
 
 .my-btn-main:active {

@@ -1,11 +1,17 @@
 import { useRef, useState } from 'react';
 import { InputText } from '../components/InputText';
 import { Button } from '../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FIND_ID, SIGN_UP } from '../constants/path';
 import { apiClient } from '../services/apiClient';
+import { useUser } from '../contexts/UserContext';
 
 export const Login = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { contextLogin } = useUser();
+
+  const from = location.state?.from?.pathname || '/';
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -38,7 +44,10 @@ export const Login = () => {
         localStorage.setItem('role', res.data.role);
         localStorage.setItem('id', res.data.userId);
 
-        window.location.replace('/');
+        contextLogin(res.data.userId);
+
+        navigate(from, { replace: true });
+        // window.location.replace('/')/;
       })
       .catch(() => {
         setIsLoginError(true);

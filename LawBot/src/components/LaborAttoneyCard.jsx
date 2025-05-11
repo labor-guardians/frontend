@@ -64,7 +64,7 @@ export const LaborAttoneyCard = ({
         })
         .then((result) => {
           if (result.isConfirmed) {
-            navigate('/login');
+            navigate('/login', { state: { from: location } });
           }
         });
     }

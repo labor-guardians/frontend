@@ -23,6 +23,7 @@ import {
 } from '../constants/path';
 import { FindPassword } from '../pages/FindPassword';
 import { LaborAttorneyChat } from '../pages/LaborAttorneyChat';
+import { PrivateRoute } from '../components/PrivateRoute';
 
 export const router = createBrowserRouter([
   {
@@ -39,13 +40,24 @@ export const router = createBrowserRouter([
       { path: LABOR_ATTORNEY_LIST, element: <LaborAttorneyList /> },
       {
         path: LABOR_ATTORNEY_CHAT_HISTORY,
-        element: <LaborAttorneyChatHistory />,
+        element: (
+          <PrivateRoute>
+            <LaborAttorneyChatHistory />
+          </PrivateRoute>
+        ),
       },
       {
         path: `${LABOR_ATTORNEY_CHAT}`,
         element: <LaborAttorneyChat />,
       },
-      { path: MYPAGE, element: <MyPage /> },
+      {
+        path: MYPAGE,
+        element: (
+          <PrivateRoute>
+            <MyPage />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
 ]);

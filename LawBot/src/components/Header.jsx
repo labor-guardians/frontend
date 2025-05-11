@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import logo from '../assets/로고.png';
 import { Button } from './Button';
 import { Nav } from './Nav';
@@ -10,22 +9,19 @@ import {
   LOGIN,
   MYPAGE,
 } from '../constants/path';
+import { useUser } from '../contexts/UserContext';
 export const Header = () => {
   const navigate = useNavigate();
-  const [id, setId] = useState(null);
 
-  useEffect(() => {
-    const localStorgaeId = localStorage.getItem('id');
-    setId(localStorgaeId);
-  }, []);
+  const { userId, contextLogout } = useUser();
 
   const goToLogin = () => {
     navigate(LOGIN);
   };
 
   const logout = () => {
-    localStorage.clear();
-    window.location.replace('/');
+    contextLogout();
+    navigate(0);
   };
 
   return (
@@ -50,30 +46,30 @@ export const Header = () => {
           </div>
           <ul
             tabIndex={0}
-            className="menu dropdown-content rounded-box z-1 mt-3 shadow  bg-white "
+            className="menu dropdown-content bg-base-100 rounded-box z-[999] mt-3 w-52 p-2 dropdown-content shadow "
           >
             <li>
-              <Link to={CHAT_BOT}>챗봇</Link>
-              <ul className="menu rounded-box w-56  bg-white">
-                <li>
-                  <a>산재 처리 관련 법률</a>
-                </li>
-                <li>
-                  <a>산재 처리 관련 법률</a>
-                </li>
-                <li>
-                  <a>산재 처리 관련 법률</a>
-                </li>
-              </ul>
+              <Link to={CHAT_BOT} className="whitespace-nowrap">
+                챗봇
+              </Link>
             </li>
             <li>
-              <Link to={LABOR_ATTORNEY_LIST}>노무사</Link>
+              <Link to={LABOR_ATTORNEY_LIST} className="whitespace-nowrap">
+                노무사
+              </Link>
             </li>
             <li>
-              <Link to={LABOR_ATTORNEY_CHAT_HISTORY}>상담기록</Link>
+              <Link
+                to={LABOR_ATTORNEY_CHAT_HISTORY}
+                className="whitespace-nowrap"
+              >
+                상담기록
+              </Link>
             </li>
             <li>
-              <Link to={MYPAGE}>마이페이지</Link>
+              <Link to={MYPAGE} className="whitespace-nowrap">
+                마이페이지
+              </Link>
             </li>
           </ul>
         </div>
@@ -90,7 +86,7 @@ export const Header = () => {
         <Nav />
       </div>
       <div className="navbar-end">
-        {id ? (
+        {userId ? (
           <button
             className="btn btn-outline text-xs sm:text-sm md:text-base lg:text-lg border-[#593315] text-[#593315] bg-[#FEF9EB] hover:bg-[#F7EED2]"
             onClick={logout}
