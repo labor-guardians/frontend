@@ -12,6 +12,9 @@ export const Login = () => {
   const { contextLogin } = useUser();
 
   const from = location.state?.from?.pathname || '/';
+  const searchParams = new URLSearchParams(location.search);
+  const redirectTo = searchParams.get('redirectTo') || '/';
+
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -46,7 +49,11 @@ export const Login = () => {
 
         contextLogin(res.data.userId);
 
-        navigate(from, { replace: true });
+        if (redirectTo) {
+          navigate(redirectTo, { replace: true });
+        } else {
+          navigate(from, { replace: true });
+        }
         // window.location.replace('/')/;
       })
       .catch(() => {

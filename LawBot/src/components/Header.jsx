@@ -10,6 +10,7 @@ import {
   MYPAGE,
 } from '../constants/path';
 import { useUser } from '../contexts/UserContext';
+
 export const Header = () => {
   const navigate = useNavigate();
 
@@ -21,8 +22,13 @@ export const Header = () => {
 
   const logout = () => {
     contextLogout();
-    navigate(0);
+    navigate('/');
   };
+
+  // const refreshToken = Cookies.get('refresh');
+  // if (!refreshToken) {
+  //   logout();
+  // }
 
   return (
     <div className="navbar bg-[#FEF9EB] fixed z-10 h-[88] top-0 left-0 lg:p-10 py-4 px-2">
@@ -103,13 +109,17 @@ export const Header = () => {
       <div className="navbar-end">
         {userId ? (
           <button
-            className="btn btn-outline lg:m-0 border-[#593315] text-[#593315] bg-[#FEF9EB] hover:bg-[#F7EED2]"
+            className="btn btn-outline me-1 sm:me-3 lg:me-1 border-[#593315] text-[#593315] bg-[#FEF9EB] hover:bg-[#F7EED2]"
             onClick={logout}
           >
             Logout
           </button>
         ) : (
-          <Button text="Login" size={'me-1 lg:m-0'} onClick={goToLogin} />
+          <Button
+            text="Login"
+            size={'me-1 sm:me-3 lg:me-1'}
+            onClick={goToLogin}
+          />
         )}
       </div>
     </div>
