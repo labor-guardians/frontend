@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
 export const ContextMenu = ({ x, y, onEdit, onDelete }) => {
   return (
     <ul
-      className="fixed bg-white border border-gray-300 rounded shadow-md 2-50"
+      className="fixed bg-white border border-gray-300 rounded shadow-md z-50"
       style={{ top: y, left: x }}
     >
       <li
