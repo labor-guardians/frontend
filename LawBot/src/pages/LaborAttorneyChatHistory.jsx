@@ -81,7 +81,6 @@ export const LaborAttorneyChatHistory = () => {
                 ? history.user.userId
                 : history.consultant.userId
             }
-            title={history.title}
             otherUserName={
               role == CONSULTANT
                 ? history.user.userName

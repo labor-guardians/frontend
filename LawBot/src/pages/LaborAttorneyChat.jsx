@@ -9,6 +9,7 @@ import useUserData from '../constants/hooks/useUserData';
 import { CONSULTANT, USER } from '../constants/role';
 import { MyChatBubble } from '../components/MyChatBubble';
 import { OtherChatBubble } from '../components/OtherChatBubble';
+import { isMyMessage } from '../utils/isMyMessage';
 
 export const LaborAttorneyChat = () => {
   // ======================== 🔧 파라미터 & 유저 데이터 ========================
@@ -282,9 +283,6 @@ export const LaborAttorneyChat = () => {
   };
 
   // ======================== 📅 날짜 포맷 ========================
-
-  const isMyMessage = (fromUser, role) =>
-    (fromUser && role === USER) || (!fromUser && role === CONSULTANT);
 
   // 메세지 그룹핑
   const groupMessagesByTime = (messages) => {

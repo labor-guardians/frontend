@@ -25,8 +25,8 @@ export const LaborAttorneyList = () => {
         </h2>
         <div className="h-[1px] w-20 bg-gray-200 mb-10 "></div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
-          {Array.from({ length: 8 }).map((attoney, index) => (
-            <LoadingLaborAttoneyCard index={index} />
+          {Array.from({ length: 8 }).map((_, index) => (
+            <LoadingLaborAttoneyCard index={index} key={index} />
           ))}
         </div>
       </div>
