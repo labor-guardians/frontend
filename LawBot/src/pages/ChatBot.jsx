@@ -262,7 +262,7 @@ export const ChatBot = () => {
           <li className="p-4 pb-2 text-xs opacity-60 tracking-wide text-center">
             지난기록
           </li>
-          <div className="overflow-y-auto h-[calc(100vh-330px)] mb-[10vh]">
+          <div className="absolute top-[72px] bottom-0 left-0 right-0 overflow-y-auto">
             {chatRooms.map((room) => (
               <li
                 key={room.id}
