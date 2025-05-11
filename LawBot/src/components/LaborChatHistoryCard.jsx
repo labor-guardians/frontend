@@ -18,13 +18,16 @@ export const LaborChatHistoryCard = ({
   const navigate = useNavigate();
   const { userId, role } = useUserData();
   const [messages, setMessages] = useState([]);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
 
   const getMessage = async () => {
     if (userId && role) {
+      setIsLoadingMessages(true);
       const res = await apiClient.get(
         `/api/conversations/${id}?accessorId=${userId}&isConsultant=${role == CONSULTANT}`,
       );
       setMessages(res.data.messages);
+      setIsLoadingMessages(false);
     }
   };
 
@@ -91,7 +94,14 @@ export const LaborChatHistoryCard = ({
         <h2 className="card-title ">{otherUserName}님</h2>
         <div className="flex flex-row gap-8 ">
           <p className="line-clamp-2 text-[#70695a]">
-            {getLastMessage(messages)}
+            {isLoadingMessages ? (
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="skeleton h-[14px] w-2/5"></div>
+                <div className="skeleton h-[14px] w-2/5"></div>
+              </div>
+            ) : (
+              getLastMessage(messages)
+            )}
           </p>
           <div className="card-actions w-fit justify-end shrink-0">
             <Button onClick={goChat} text="이어서 상담하기" />

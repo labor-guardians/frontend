@@ -25,10 +25,14 @@ export const Header = () => {
   };
 
   return (
-    <div className="navbar bg-[#FEF9EB] fixed z-10 h-[88] top-0 left-0 p-10">
+    <div className="navbar bg-[#FEF9EB] fixed z-10 h-[88] top-0 left-0 lg:p-10 py-4 px-2">
       <div className="navbar-start ">
-        <div className="dropdown">
-          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+        <div className="dropdown relative">
+          <div
+            tabIndex={0}
+            role="button"
+            className="btn btn-ghost p-2 sm:p-4 lg:hidden hover:bg-[#e6dfd1] border-0 text-[#160a02]"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -46,28 +50,37 @@ export const Header = () => {
           </div>
           <ul
             tabIndex={0}
-            className="menu dropdown-content bg-base-100 rounded-box z-[999] mt-3 w-52 p-2 dropdown-content shadow "
+            className="relative menu dropdown-content rounded-box z-[10000] mt-3 w-52 p-2 dropdown-content shadow bg-[#e7dfcc]"
           >
             <li>
-              <Link to={CHAT_BOT} className="whitespace-nowrap">
+              <Link
+                to={CHAT_BOT}
+                className="whitespace-nowrap text-[#140900] hover:bg-[#d8ceb8] active:!bg-[#5e543f] active:!text-[#ececec]"
+              >
                 챗봇
               </Link>
             </li>
             <li>
-              <Link to={LABOR_ATTORNEY_LIST} className="whitespace-nowrap">
+              <Link
+                to={LABOR_ATTORNEY_LIST}
+                className="whitespace-nowrap text-[#140900] hover:bg-[#d8ceb8] active:!bg-[#5e543f] active:!text-[#ececec]"
+              >
                 노무사
               </Link>
             </li>
             <li>
               <Link
                 to={LABOR_ATTORNEY_CHAT_HISTORY}
-                className="whitespace-nowrap"
+                className="whitespace-nowrap text-[#140900] hover:bg-[#d8ceb8] active:!bg-[#5e543f] active:!text-[#ececec]"
               >
                 상담기록
               </Link>
             </li>
-            <li>
-              <Link to={MYPAGE} className="whitespace-nowrap">
+            <li className="z-[999]">
+              <Link
+                to={MYPAGE}
+                className="whitespace-nowrap text-[#140900] hover:bg-[#d8ceb8] active:!bg-[#5e543f] active:!text-[#ececec]"
+              >
                 마이페이지
               </Link>
             </li>
@@ -76,9 +89,11 @@ export const Header = () => {
 
         <Link className="flex flex-row">
           <img src={logo} className="w-14 md:w-18 h-fit " />
-          <div className="flex flex-col justify-center text-[#653F21] font-bold text-xl md:text-2xl ml-1 font-['KanitBold'] leading-7">
-            <p className="font-extrabold">노동</p>
-            <p>LawBot</p>
+          <div className="flex flex-col justify-center text-[#653F21] font-bold text-xl md:text-2xl  ml-1 font-['KanitBold'] leading-7">
+            <p className="font-extrabold leading-[1.2rem] md:leading-[1.5rem]">
+              노동
+            </p>
+            <p className="leading-[1.2rem] md:leading-[1.5rem] ">LawBot</p>
           </div>
         </Link>
       </div>
@@ -88,20 +103,13 @@ export const Header = () => {
       <div className="navbar-end">
         {userId ? (
           <button
-            className="btn btn-outline text-xs sm:text-sm md:text-base lg:text-lg border-[#593315] text-[#593315] bg-[#FEF9EB] hover:bg-[#F7EED2]"
+            className="btn btn-outline lg:m-0 border-[#593315] text-[#593315] bg-[#FEF9EB] hover:bg-[#F7EED2]"
             onClick={logout}
           >
             Logout
           </button>
         ) : (
-          <Button
-            text="Login"
-            text-xs
-            sm:text-sm
-            md:text-base
-            lg:text-lg
-            onClick={goToLogin}
-          />
+          <Button text="Login" size={'me-1 lg:m-0'} onClick={goToLogin} />
         )}
       </div>
     </div>

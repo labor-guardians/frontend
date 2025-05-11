@@ -354,12 +354,12 @@ export const LaborAttorneyChat = () => {
         </div>
 
         {/* 입력창 */}
-        <div className="fixed bottom-0 left-0 right-0 pb-3 bg-white z-20 m-auto">
-          <div className="flex items-center border-2 w-3xl border-[#653F21] rounded-lg bg-white h-[50px] px-3 mx-auto">
+        <div className="fixed bottom-0 left-0 right-0 pb-3  z-20 m-auto">
+          <div className="flex items-center border-2 w-3xl border-[#653F21] bg-white rounded-lg  h-[50px] px-4 mx-auto">
             <input
               type="text"
-              placeholder="전문 노무사에게 물어보세요"
-              className="flex-grow outline-none bg-white"
+              placeholder="전문 노무사에게 물어보세요.."
+              className="flex-grow outline-none"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {

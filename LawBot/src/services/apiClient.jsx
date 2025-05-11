@@ -9,3 +9,16 @@ export const apiClient = axios.create({
   },
   withCredentials: true,
 });
+
+apiClient.interceptors.request.use(
+  (config) => {
+    const accessToken = localStorage.getItem('access');
+    if (accessToken) {
+      config.headers['access'] = accessToken;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
