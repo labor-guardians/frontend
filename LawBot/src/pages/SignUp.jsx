@@ -4,6 +4,7 @@ import { Button } from '../components/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import { LOGIN, SIGN_UP_LABOR } from '../constants/path';
 import { apiClient } from '../services/apiClient';
+import { Alert } from '../components/Alert';
 
 export const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -29,6 +30,7 @@ export const SignUp = () => {
   const [emailCodeSendSuc, setEmailCodeSendSuc] = useState(false);
   const [validEmail, setValidEmail] = useState(false);
   const navigate = useNavigate();
+  const [alertInfo, setAlertInfo] = useState(null);
 
   const handleChange = (label, value) => {
     if (label === 'password') {
@@ -164,8 +166,13 @@ export const SignUp = () => {
         email: formData.email,
       });
       if (res.status === 200) {
-        alert('회원가입 완료');
-        navigate(LOGIN);
+        // alert('회원가입 완료');
+        setAlertInfo({
+          title: '회원가입이 완료되었습니다.',
+          text: '',
+          result: true,
+          nav: LOGIN,
+        });
       }
     } catch (err) {
       console.log(err);
@@ -265,6 +272,13 @@ export const SignUp = () => {
           </div>
         </div>
       </div>
+      {alertInfo && (
+        <Alert
+          title={alertInfo.title}
+          text={alertInfo.text}
+          result={alertInfo.result}
+        />
+      )}
     </div>
   );
 };

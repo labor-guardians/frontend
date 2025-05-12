@@ -26,6 +26,7 @@ export const SignUpLabor = () => {
   const [emailCodeSendSuc, setEmailCodeSendSuc] = useState(false);
   const [validEmail, setValidEmail] = useState(false);
   const navigate = useNavigate();
+  const [alertInfo, setAlertInfo] = useState(null);
 
   const handleChange = (label, value) => {
     if (label === 'password') {
@@ -149,9 +150,6 @@ export const SignUpLabor = () => {
       email: formData.email,
       description: formData.description,
     };
-
-    console.log('💬 JSON.stringify 전송 내용:', consultantJson);
-
     fd.append(
       'ConsultantData',
       new Blob([JSON.stringify(consultantJson)], {
@@ -160,17 +158,17 @@ export const SignUpLabor = () => {
     );
     fd.append('license', formData.license);
 
-    // 👇 실제 FormData 내부 확인
-    for (let [key, value] of fd.entries()) {
-      console.log(`📦 FormData - ${key}:`, value);
-    }
     try {
       const res = await apiClient.post(`/api/auth/join/consultant`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (res.status === 200) {
-        alert('회원가입 완료');
-        navigate(LOGIN);
+        setAlertInfo({
+          title: '회원가입이 완료되었습니다.',
+          text: '',
+          result: true,
+          nav: LOGIN,
+        });
       }
     } catch (e) {
       console.log(e);
@@ -308,6 +306,13 @@ export const SignUpLabor = () => {
           </div>
         </div>
       </div>
+      {alertInfo && (
+        <Alert
+          title={alertInfo.title}
+          text={alertInfo.text}
+          result={alertInfo.result}
+        />
+      )}
     </div>
   );
 };

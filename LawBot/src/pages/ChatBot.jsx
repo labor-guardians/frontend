@@ -232,7 +232,7 @@ export const ChatBot = () => {
   `;
 
   return (
-    <div className="mt-28 pt-4 flex flex-col md:flex-row justify-between px-4 md:pr-20 relative">
+    <div className="mt-28 pt-0 flex flex-row md:flex-row px-4 md:pr-20 relative">
       {/* 모바일 토글 버튼 */}
       {!sidebarOpen && (
         <div className={`md:hidden fixed left-5 z-40 top-[88]`}>
