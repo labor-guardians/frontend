@@ -26,7 +26,7 @@ export const FindId = () => {
   const emailInputRef = useRef(null);
   const codeInputRef = useRef(null);
 
-  const sendNumber = async () => {
+  const sendCode = async () => {
     if (!formData.email) {
       setErrors((prev) => ({ ...prev, global: '모든 항목을 입력해주세요.' }));
       emailInputRef.current.focus();
@@ -117,7 +117,7 @@ export const FindId = () => {
           <Button
             text="인증번호 발송"
             disabled={isSendCode}
-            onClick={sendNumber}
+            onClick={sendCode}
           />
         </div>
         {isEmailError && (
@@ -141,19 +141,20 @@ export const FindId = () => {
         {errors.global && (
           <p className="text-red-500 text-center mb-4">{errors.global}</p>
         )}
-        <Button
-          text={
-            isLoading ? (
-              <span className="loading loading-dots loading-xs"></span>
-            ) : (
-              '아이디 찾기'
-            )
-          }
-          size={'w-full mt-5'}
-          onClick={findId}
-          type={'submit'}
-          disabled={!isSendCode}
-        />
+        {isSendCode && (
+          <Button
+            text={
+              isLoading ? (
+                <span className="loading loading-dots loading-xs"></span>
+              ) : (
+                '아이디 찾기'
+              )
+            }
+            size={'w-full mt-5'}
+            onClick={findId}
+            type={'submit'}
+          />
+        )}
       </form>
 
       <div className="mt-8 flex flex-col sm:flex-row gap-5 text-center">
