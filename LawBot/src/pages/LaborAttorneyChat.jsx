@@ -120,6 +120,11 @@ export const LaborAttorneyChat = () => {
       fromUser: role == USER,
     };
 
+    if (!stomptRef.current || !stomptRef.current.connected) {
+      console.warn('STOMP 연결 안 됨, 메시지 전송 취소');
+      return;
+    }
+
     stomptRef.current?.publish({
       destination: '/app/chat',
       body: JSON.stringify(chatMessage),
@@ -130,7 +135,6 @@ export const LaborAttorneyChat = () => {
 
   // 상대방 채팅 읽음처리
   const initRead = () => {
-    console.log('initRead');
     setMessages((prevMessages) => {
       const updatedMessages = [...prevMessages]; // 상태를 직접 수정하지 않기 위해 복사본 사용
 
@@ -187,6 +191,8 @@ export const LaborAttorneyChat = () => {
 
   // ======================== 🔌 웹소켓 연결 ========================
   const connect = () => {
+    console.log('웹소켓 연결 시도');
+
     const stompClient = new Client({
       webSocketFactory: () => new SockJS(wsBaseURL),
       reconnectDelay: 5000,
@@ -207,7 +213,6 @@ export const LaborAttorneyChat = () => {
             addMessage(message);
 
             // 상대방이 보낸 메세지만 읽음
-            console.log(isTabFocused.current);
 
             if (isTabFocused.current && !isMyMessage(message.fromUser, role)) {
               markMessageAsRead(message.id);
@@ -319,7 +324,6 @@ export const LaborAttorneyChat = () => {
     // 마지막 그룹 추가
     if (currentGroup.length) groupedMessages.push(currentGroup);
 
-    console.log(groupedMessages); // 디버깅용
     return groupedMessages;
   };
 
