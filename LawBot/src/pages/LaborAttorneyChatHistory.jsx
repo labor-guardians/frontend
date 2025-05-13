@@ -3,7 +3,6 @@ import { LaborChatHistoryCard } from '../components/LaborChatHistoryCard';
 import { apiClient } from '../services/apiClient';
 import useUserData from '../constants/hooks/useUserData';
 import { CONSULTANT, USER } from '../constants/role';
-import { LoadingLaborChatHistoryCard } from '../components/loading/LoadingLaborChatHistoryCard';
 
 export const LaborAttorneyChatHistory = () => {
   const [histories, setHistories] = useState([]);
@@ -58,9 +57,7 @@ export const LaborAttorneyChatHistory = () => {
           {role == USER ? '노무사와 상담기록' : '상담기록'}
         </h2>
         <div className="h-[1px] w-20 bg-gray-200 mb-10"></div>
-        <div className="flex flex-col items-center gap-4 w-full">
-          <LoadingLaborChatHistoryCard />
-        </div>
+        <span className="loading loading-dots loading-xs text-[#867161]"></span>
       </div>
     );
   }

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import send from '../assets/chatSend.png';
-import { baseURL, wsBaseURL } from '../constants/baseURL';
+import { wsBaseURL } from '../constants/baseURL';
 import { apiClient } from '../services/apiClient';
 import SockJS from 'sockjs-client';
 import { useLocation } from 'react-router-dom';
@@ -175,7 +175,7 @@ export const LaborAttorneyChat = () => {
   const getMessages = async () => {
     try {
       const res = await apiClient.get(
-        `${baseURL}/api/conversations/${conversationId}?accessorId=${userId}&isConsultant=${role == CONSULTANT}`,
+        `/api/conversations/${conversationId}?accessorId=${userId}&isConsultant=${role == CONSULTANT}`,
       );
       const resMesaage = res.data.messages;
       setMessages(resMesaage);
