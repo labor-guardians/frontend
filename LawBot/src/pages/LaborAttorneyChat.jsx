@@ -3,13 +3,13 @@ import { Client } from '@stomp/stompjs';
 import send from '../assets/chatSend.png';
 import { wsBaseURL } from '../constants/baseURL';
 import { apiClient } from '../services/apiClient';
-import SockJS from 'sockjs-client';
 import { useLocation } from 'react-router-dom';
 import useUserData from '../constants/hooks/useUserData';
 import { CONSULTANT, USER } from '../constants/role';
 import { MyChatBubble } from '../components/MyChatBubble';
 import { OtherChatBubble } from '../components/OtherChatBubble';
 import { isMyMessage } from '../utils/isMyMessage';
+import SockJS from 'sockjs-client';
 
 export const LaborAttorneyChat = () => {
   // ======================== 🔧 파라미터 & 유저 데이터 ========================
@@ -111,6 +111,11 @@ export const LaborAttorneyChat = () => {
 
   // ======================== 📲 메세지 발송 ========================
   const sendMessage = () => {
+    if (!stomptRef.current || !stomptRef.current.connected) {
+      console.warn('STOMP 연결 안 됨, 메시지 전송 취소');
+      return;
+    }
+
     if (input.trim() === '') return;
 
     const chatMessage = {
@@ -119,11 +124,6 @@ export const LaborAttorneyChat = () => {
       content: input,
       fromUser: role == USER,
     };
-
-    if (!stomptRef.current || !stomptRef.current.connected) {
-      console.warn('STOMP 연결 안 됨, 메시지 전송 취소');
-      return;
-    }
 
     stomptRef.current?.publish({
       destination: '/app/chat',
@@ -160,6 +160,11 @@ export const LaborAttorneyChat = () => {
 
   // ======================== 🧠 새로운 채팅방 생성 ========================
   const makeNewConversation = async () => {
+    if (!stomptRef.current || !stomptRef.current.connected) {
+      console.warn('STOMP 연결 안 됨, 메시지 전송 취소');
+      return;
+    }
+
     // 본인이 노무사이면 반대로
     const requestUserId = role == USER ? userId : otherUserId;
     const consultantId = role == USER ? otherUserId : userId;
@@ -259,7 +264,10 @@ export const LaborAttorneyChat = () => {
 
   // ======================== ✅ 메세지 읽음 처리 ========================
   const markMessageAsRead = (messageId) => {
-    console.log('읽음 publish');
+    if (!stomptRef.current || !stomptRef.current.connected) {
+      console.warn('STOMP 연결 안 됨, 메시지 전송 취소');
+      return;
+    }
 
     if (stomptRef.current) {
       const readRequest = {

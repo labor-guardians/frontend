@@ -93,16 +93,17 @@ export const LaborChatHistoryCard = ({
       <div className="card-body">
         <h2 className="card-title ">{otherUserName}님</h2>
         <div className="flex flex-row gap-8 ">
-          <p className="line-clamp-2 text-[#70695a]">
-            {isLoadingMessages ? (
-              <div className="flex flex-col gap-2 flex-1">
-                <div className="skeleton h-[14px] w-2/5"></div>
-                <div className="skeleton h-[14px] w-2/5"></div>
-              </div>
-            ) : (
-              getLastMessage(messages)
-            )}
-          </p>
+          {isLoadingMessages ? (
+            <div className="flex flex-col gap-2 flex-1">
+              <div className="skeleton h-[14px] w-2/5"></div>
+              <div className="skeleton h-[14px] w-2/5"></div>
+            </div>
+          ) : (
+            <p className="line-clamp-2 text-[#70695a]">
+              {getLastMessage(messages)}
+            </p>
+          )}
+
           <div className="card-actions w-fit justify-end shrink-0">
             <Button onClick={goChat} text="이어서 상담하기" />
           </div>
