@@ -215,30 +215,28 @@ export const ChatBot = () => {
     navigate(0);
   };
 
-  // 사이드바 클래스 계산
   const sidebarClasses = `
-    transition-all duration-300 ease-in-out 
-    ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} 
-    fixed md:relative left-0 top-0 z-30 bg-white 
-    h-screen md:h-auto shadow-lg md:shadow-md
-    w-64 md:w-70 md:block 
-  `;
+  fixed top-0 left-0 h-screen z-30 bg-[#e7dfcc]
+  shadow-lg w-64 md:w-64 rounded-xl
+  transition-transform duration-300 ease-in-out top-[150px]
+  ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+`;
 
   // 메인 컨텐츠 영역 클래스 계산
   const mainContentClasses = `
-    transition-all duration-300 ease-in-out
-    flex flex-col w-full md:w-4/5 relative
-    ${sidebarOpen && window.innerWidth < 768 ? 'opacity-30' : 'opacity-100'}
-  `;
+  ml-0 md:ml-64 transition-all duration-300 ease-in-out
+  flex flex-col w-full relative
+  ${sidebarOpen && window.innerWidth < 768 ? 'opacity-30' : 'opacity-100'}
+`;
 
   return (
-    <div className="mt-28 pt-0 flex flex-row md:flex-row px-4 md:pr-20 relative">
+    <div className="pt-28 flex relative min-h-screen bg-[#FEF9EB]">
       {/* 모바일 토글 버튼 */}
       {!sidebarOpen && (
-        <div className={`md:hidden fixed left-5 z-40 top-[88]`}>
+        <div className="md:hidden fixed left-4 top-[88px] z-40">
           <button
             onClick={toggleSidebar}
-            className={`p-2 bg-[#653F21] text-white rounded-full shadow-md`}
+            className="p-2 bg-[#653F21] text-white rounded-full shadow-md"
           >
             <BiMenu size={24} />
           </button>
@@ -247,12 +245,12 @@ export const ChatBot = () => {
 
       {/* 사이드바 */}
       <div className={sidebarClasses}>
-        <ul className="list round-full shadow-md h-full">
+        <ul className="list h-full shadow-md overflow-y-auto relative">
           <div className="flex justify-end mt-5 px-4" onClick={curReload}>
-            <div className={`md:hidden fixed left-5 z-40 top-[88]`}>
+            <div className="md:hidden absolute top-5 left-5 z-50">
               <button
                 onClick={toggleSidebar}
-                className={`p-2 bg-[#653F21] text-white rounded-full shadow-md`}
+                className="p-2 bg-[#653F21] text-white rounded-full shadow-md"
               >
                 <BiX size={24} />
               </button>
@@ -296,7 +294,7 @@ export const ChatBot = () => {
       </div>
 
       {/* 채팅 영역 */}
-      <div className={`${firstChat ? 'flex-1' : mainContentClasses}`}>
+      <div className={`${mainContentClasses} px-4 md:pr-20`}>
         {firstChat ? (
           <div className="flex flex-col justify-center gap-[5vw] w-full h-[70vh] items-center">
             <div className="text-center font-bold text-[8vw] sm:text-[6vw] md:text-[4vw] lg:text-[3vw] leading-relaxed text-[#653F21] px-4">
@@ -335,7 +333,7 @@ export const ChatBot = () => {
                     </div>
                   ) : (
                     <div className="flex justify-center">
-                      <div className="text-black px-3 md:px-6 py-3 w-[95%] md:w-[80%] rounded-md shadow whitespace-pre-line">
+                      <div className="text-black px-3 md:px-6 py-3 w-[95%] md:w-[80%] rounded-md shadow-lg whitespace-pre-line">
                         {chat.animate && index === chatList.length - 1 ? (
                           <div className="mb-[10vh]">
                             <TypeAnimation

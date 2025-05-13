@@ -233,7 +233,7 @@ export const MyPage = () => {
   };
   return (
     <>
-      <div className="flex flex-col items-center px-4 md:px-0">
+      <div className="flex flex-col items-center px-4 md:px-1 mt-80">
         {!selectedImg ? (
           <div className="flex justify-center">
             <BsPersonCircle
@@ -247,7 +247,7 @@ export const MyPage = () => {
           <img
             onClick={() => document.getElementById('fileInput').click()}
             src={selectedImg}
-            className="w-24 h-24 md:w-40 md:h-40 object-cover border border-gray-300 rounded-full"
+            className={`w-24 h-24 md:w-45 md:h-45 object-cover border border-gray-300 rounded-full hover:border-gray-500`}
           />
         )}
         <input

@@ -61,8 +61,13 @@ export const SignUp = () => {
         params: { userid: formData.userid },
       });
       if (res.status === 200) {
-        if (!res.data) setIsUserId(false);
-        else {
+        if (!res.data) {
+          setIsUserId(false);
+          setErrors((prev) => ({
+            ...prev,
+            userid: '사용 가능한 아이디입니다.',
+          }));
+        } else {
           setIsUserId(true);
           setErrors((prev) => ({
             ...prev,
@@ -181,7 +186,7 @@ export const SignUp = () => {
 
   return (
     <div className="flex justify-center items-center min-h-[60vh] px-4">
-      <div className="flex flex-col w-full max-w-md">
+      <div className="flex flex-col w-full max-w-sm">
         <p className="font-bold text-2xl text-center">회원가입</p>
         <div className="mt-10">
           {[
@@ -193,22 +198,22 @@ export const SignUp = () => {
             'username',
           ].map((field) => (
             <div key={field} className="flex flex-col mb-4">
-              <label className="font-semibold mb-1">
-                {field === 'userid'
-                  ? '아이디'
-                  : field === 'password'
-                    ? '비밀번호'
-                    : field === 'passwordCheck'
-                      ? '비밀번호 확인'
-                      : field === 'email'
-                        ? '이메일'
-                        : field === 'emailCode'
-                          ? '인증코드'
-                          : '이름'}
-              </label>
               <div className="flex gap-2">
                 <InputText
                   type={field.includes('password') ? 'password' : 'text'}
+                  label={
+                    field === 'userid'
+                      ? '아이디'
+                      : field === 'password'
+                        ? '비밀번호'
+                        : field === 'passwordCheck'
+                          ? '비밀번호 확인'
+                          : field === 'email'
+                            ? '이메일'
+                            : field === 'emailCode'
+                              ? '인증코드'
+                              : '이름'
+                  }
                   placeholder={
                     field === 'userid'
                       ? '아이디'
@@ -252,7 +257,11 @@ export const SignUp = () => {
                 )}
               </div>
               {errors[field] && (
-                <p className="text-red-500 text-sm mt-1">{errors[field]}</p>
+                <p
+                  className={`${isUsedId ? 'text-red-500' : 'text-green-500'} text-sm mt-1`}
+                >
+                  {errors[field]}
+                </p>
               )}
             </div>
           ))}

@@ -36,7 +36,14 @@ export const router = createBrowserRouter([
       { path: SIGN_UP_LABOR, element: <SignUpLabor /> },
       { path: FIND_ID, element: <FindId /> },
       { path: FIND_PASSWORD, element: <FindPassword /> },
-      { path: CHAT_BOT, element: <ChatBot /> },
+      {
+        path: CHAT_BOT,
+        element: (
+          <PrivateRoute>
+            <ChatBot />
+          </PrivateRoute>
+        ),
+      },
       { path: LABOR_ATTORNEY_LIST, element: <LaborAttorneyList /> },
       {
         path: LABOR_ATTORNEY_CHAT_HISTORY,
