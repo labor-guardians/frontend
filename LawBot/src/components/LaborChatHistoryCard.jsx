@@ -85,7 +85,7 @@ export const LaborChatHistoryCard = ({
           />
         ) : (
           <BsPersonCircle
-            color="#A5A5A5"
+            color="#e7dfcc"
             className="w-[84px]  object-contain"
           />
         )}

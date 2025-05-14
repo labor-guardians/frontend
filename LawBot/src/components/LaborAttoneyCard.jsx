@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { LABOR_ATTORNEY_CHAT } from '../constants/path';
 import { Button } from './Button';
 import { baseURL } from '../constants/baseURL';
-import { BsPersonCircle } from 'react-icons/bs';
+import { BsPersonCircle, BsPersonFill } from 'react-icons/bs';
 import { CONSULTANT, USER } from '../constants/role';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -86,7 +86,7 @@ export const LaborAttoneyCard = ({
           />
         ) : (
           <BsPersonCircle
-            color="#A5A5A5"
+            color="#e7dfcc"
             className="w-[120px] sm:w-[200px] object-contain"
           />
         )}
