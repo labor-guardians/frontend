@@ -307,12 +307,15 @@ export const ChatBot = () => {
               <input
                 type="text"
                 placeholder="LawBot에게 물어보세요"
-                className="flex-grow outline-none bg-white"
+                className="flex-grow min-w-0 outline-none bg-white text-sm sm:text-base"
                 value={sendMessage}
                 onChange={(e) => setSendMessage(e.target.value)}
               />
-              <button type="submit">
-                <img src={send} alt="send" className="w-5 h-5 ml-2" />
+              <button
+                type="submit"
+                className="flex-shrink-0 w-8 h-8 flex items-center justify-center"
+              >
+                <img src={send} alt="send" className="w-5 h-5" />
               </button>
             </form>
           </div>

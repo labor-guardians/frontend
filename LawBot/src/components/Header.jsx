@@ -94,7 +94,7 @@ export const Header = () => {
         </div>
 
         <Link className="flex flex-row">
-          <img src={logo} className="w-14 md:w-18 h-fit " />
+          <img src={logo} className="w-14 md:w-18 h-auto " />
           <div className="flex flex-col justify-center text-[#653F21] font-bold text-xl md:text-2xl  ml-1 font-['KanitBold'] leading-7">
             <p className="font-extrabold leading-[1.2rem] md:leading-[1.5rem]">
               노동
