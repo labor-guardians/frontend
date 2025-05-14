@@ -135,6 +135,11 @@ export const LaborAttorneyChat = () => {
 
   // 상대방 채팅 읽음처리
   const initRead = () => {
+    if (!stomptRef.current || !stomptRef.current.connected) {
+      console.warn('STOMP 연결 안 됨, 메시지 전송 취소');
+      return;
+    }
+
     setMessages((prevMessages) => {
       const updatedMessages = [...prevMessages]; // 상태를 직접 수정하지 않기 위해 복사본 사용
 
@@ -257,7 +262,8 @@ export const LaborAttorneyChat = () => {
 
   // ======================== 🔌 소켓 연결 해제 ========================
   const disconnect = () => {
-    if (stomptRef.current) {
+    if (stomptRef.current && stomptRef.current.connected) {
+      console.log('STOMP 연결해제');
       stomptRef.current.deactivate();
     }
   };
