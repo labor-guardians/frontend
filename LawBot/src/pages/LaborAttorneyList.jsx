@@ -101,7 +101,7 @@ export const LaborAttorneyList = () => {
                 color={checkedFilter.accident ? '#FEF9EB' : '#beac93'}
               />
             </div>
-            <p className="text-xs sm:text-base">해고/징계</p>
+            <p className="text-xs sm:text-base">산업재해</p>
           </div>
 
           <div
