@@ -27,6 +27,14 @@ export const SignUpLabor = () => {
   const [validEmail, setValidEmail] = useState(false);
   const navigate = useNavigate();
   const [alertInfo, setAlertInfo] = useState(null);
+  const categories = [
+    '해고/징계',
+    '산업재해',
+    '임금/퇴직금',
+    '직장 내 괴롭힘',
+    '기타 근로분쟁',
+  ];
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   const handleChange = (label, value) => {
     if (label === 'password') {
@@ -299,6 +307,26 @@ export const SignUpLabor = () => {
               )}
             </div>
           ))}
+
+          <div className="mt-4">
+            <label className="font-semibold mb-2 block">전문 분야</label>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  // onClick={() => toggleCategory(category)}
+                  className={`px-4 py-2 rounded-full border ${
+                    selectedCategories.includes(category)
+                      ? 'bg-blue-500 text-white border-blue-500'
+                      : 'bg-white text-gray-700 border-gray-300'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {errors.global && (
             <p className="text-red-500 text-center mb-4">{errors.global}</p>
