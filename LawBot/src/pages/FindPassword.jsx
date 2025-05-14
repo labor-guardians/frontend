@@ -13,18 +13,23 @@ export const FindPassword = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    userName: '',
+    userId: '',
     email: '',
     code: '',
     newPassword: '',
     newPasswordCheck: '',
   });
   const [touched, setTouched] = useState({
-    userName: '',
+    userId: '',
     email: '',
     code: '',
     newPassword: '',
     newPasswordCheck: '',
+  });
+
+  const [isLoadings, setIsLoadings] = useState({
+    sendEmail: '',
+    verifyCode: '',
   });
   const [isInfoError, setInfoError] = useState(false);
   const [isSendCode, setSendCode] = useState(false);
@@ -34,12 +39,12 @@ export const FindPassword = () => {
     passwordCheck: '',
     global: '',
   });
-  const nameInputRef = useRef(null);
+  const userIdInputRef = useRef(null);
   const emailInputRef = useRef(null);
   const codeInputRef = useRef(null);
 
   const sendCode = async () => {
-    if (!formData.userName) {
+    if (!formData.userId) {
       setErrors((prev) => ({ ...prev, global: '모든 항목을 입력해주세요.' }));
       emailInputRef.current.focus();
       return;
@@ -51,22 +56,26 @@ export const FindPassword = () => {
     }
     setErrors((prev) => ({ ...prev, global: '' }));
 
-    setSendCode(true);
+    setIsLoadings((prev) => ({ ...prev, sendEmail: true }));
     apiClient
       .post('/api/auth/sendEmailForPassword', {
-        userName: formData.userName,
+        userId: formData.userId,
         email: formData.email,
       })
       .then(() => {
         setInfoError(false);
+        setSendCode(true);
       })
       .catch(() => {
         setInfoError(true);
+      })
+      .finally(() => {
+        setIsLoadings((prev) => ({ ...prev, sendEmail: false }));
       });
   };
 
   const verifyCode = () => {
-    if (!formData.userName) {
+    if (!formData.userId) {
       setErrors((prev) => ({ ...prev, global: '모든 항목을 입력해주세요.' }));
       emailInputRef.current.focus();
       return;
@@ -79,6 +88,7 @@ export const FindPassword = () => {
     setErrors((prev) => ({ ...prev, global: '' }));
 
     setErrors((prev) => ({ ...prev, code: '' }));
+    setIsLoadings((prev) => ({ ...prev, verifyCode: true }));
     apiClient
       .post('/api/auth/verifyEmailForPassword', {
         email: formData.email,
@@ -91,6 +101,9 @@ export const FindPassword = () => {
         } else {
           setErrors((prev) => ({ ...prev, code: '인증번호가 틀렸습니다.' }));
         }
+      })
+      .finally(() => {
+        setIsLoadings((prev) => ({ ...prev, verifyCode: false }));
       });
   };
 
@@ -100,7 +113,7 @@ export const FindPassword = () => {
     setErrors((prev) => ({ ...prev, code: '' }));
 
     if (
-      !formData.userName ||
+      !formData.userId ||
       !formData.email ||
       !formData.code ||
       !formData.newPassword ||
@@ -166,15 +179,15 @@ export const FindPassword = () => {
       <h2 className="text-2xl font-bold mb-10">비밀번호 찾기</h2>
       <form className="w-full flex flex-col items-center gap-4">
         <InputText
-          placeholder={'이름'}
-          label={'이름'}
+          placeholder={'아이디'}
+          label={'아이디'}
           onChange={handleChange}
-          name="userName"
+          name="userId"
           onBlur={handleBlur}
-          value={formData.userName || ''}
-          isValidation={!touched.userName || formData.userName != ''}
-          validationText={'이름을 입력해주세요'}
-          ref={nameInputRef}
+          value={formData.userId || ''}
+          isValidation={!touched.userId || formData.userId != ''}
+          validationText={'아이디를 입력해주세요'}
+          ref={userIdInputRef}
         />
         <div className="flex gap-1 w-full">
           <InputText
@@ -190,7 +203,14 @@ export const FindPassword = () => {
             ref={emailInputRef}
           />
           <Button
-            text="인증번호 발송"
+            className={'min-w-[115px]'}
+            text={
+              isLoadings.sendEmail ? (
+                <span className="loading loading-dots loading-xs"></span>
+              ) : (
+                '인증번호 발송'
+              )
+            }
             onClick={sendCode}
             disabled={isSendCode}
           />
@@ -211,7 +231,14 @@ export const FindPassword = () => {
               ref={codeInputRef}
             />
             <Button
-              text="인증번호 확인"
+              className={'min-w-[115px]'}
+              text={
+                isLoadings.verifyCode ? (
+                  <span className="loading loading-dots loading-xs"></span>
+                ) : (
+                  '인증번호 확인'
+                )
+              }
               onClick={verifyCode}
               disabled={isVerifyCode}
             />

@@ -75,15 +75,15 @@ export const LaborAttorneyChatHistory = () => {
             id={history.id}
             otherUserId={
               role == CONSULTANT
-                ? history.user.userId
-                : history.consultant.userId
+                ? history.user && history.user.userId
+                : history.consultant && history.consultant.userId
             }
             otherUserName={
               role == CONSULTANT
-                ? history.user.userName
-                : history.consultant.userName
+                ? history.user && history.user.userName
+                : history.consultant && history.consultant.userName
             }
-            photo={history.consultant.photo}
+            photo={history.consultant && history.consultant.photo}
             key={history.id}
           />
         ))}

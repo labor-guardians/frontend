@@ -13,6 +13,9 @@ export const FindId = () => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadings, setIsLoadings] = useState({
+    sendEmail: '',
+  });
   const [formData, setFormData] = useState({
     email: null,
     code: null,
@@ -34,18 +37,21 @@ export const FindId = () => {
     }
     setErrors((prev) => ({ ...prev, global: '' }));
 
-    setSendCode(true);
+    setIsLoadings((prev) => ({ ...prev, sendEmail: true }));
     apiClient
       .post('/api/auth/sendEmailForUserId', {
         email: formData.email,
       })
       .then(() => {
         setEmailError(false);
+        setSendCode(true);
       })
       .catch(() => {
         setEmailError(true);
       })
-      .finally(() => {});
+      .finally(() => {
+        setIsLoadings((prev) => ({ ...prev, sendEmail: false }));
+      });
 
     // api 성공시
   };
@@ -115,7 +121,14 @@ export const FindId = () => {
             readOnly={isSendCode}
           />
           <Button
-            text="인증번호 발송"
+            className={'min-w-[115px]'}
+            text={
+              isLoadings.sendEmail ? (
+                <span className="loading loading-dots loading-xs"></span>
+              ) : (
+                '인증번호 발송'
+              )
+            }
             disabled={isSendCode}
             onClick={sendCode}
           />
