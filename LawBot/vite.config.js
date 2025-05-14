@@ -8,19 +8,19 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tailwindcss()],
   };
 
-  // if (mode === 'development') {
-  //   config.server = {
-  //     proxy: {
-  //       '/api': {
-  //         target: 'http://18.219.49.169:8080/',
-  //         changeOrigin: true,
-  //         rewrite: (path) => path.replace(/^\/api/, ''),
-  //         secure: false,
-  //         ws: true,
-  //       },
-  //     },
-  //   };
-  // }
+  if (mode === 'development') {
+    config.server = {
+      proxy: {
+        '/api': {
+          target: 'http://18.219.49.169:8080/',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+          secure: false,
+          ws: true,
+        },
+      },
+    };
+  }
 
   return config;
 });

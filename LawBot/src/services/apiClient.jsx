@@ -2,7 +2,7 @@ import axios from 'axios';
 import { baseURL } from '../constants/baseURL';
 
 export const apiClient = axios.create({
-  baseURL: baseURL, // 개발환경이면 api/ 아니면 baseURL
+  baseURL: import.meta.env.MODE === 'development' ? '/api' : baseURL, // 개발환경이면 api/ 아니면 baseURL
   headers: {
     'Content-Type': 'application/json',
     'access-control-expose-headers': 'access',
@@ -35,7 +35,9 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshResponse = await axios.post(
-          `${baseURL}/reissue`, // 개발환경이면 api/ 아니면 baseURL
+          import.meta.env.MODE === 'development'
+            ? `/api/reissue`
+            : `${baseURL}/reissue`, // 개발환경이면 api/ 아니면 baseURL
           {},
           {
             withCredentials: true, // 보통 쿠키 기반 리프레시를 위해 필요
