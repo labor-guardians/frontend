@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { LABOR_ATTORNEY_CHAT } from '../constants/path';
 import { Button } from './Button';
 import { baseURL } from '../constants/baseURL';
@@ -21,6 +21,7 @@ export const LaborAttoneyCard = ({
   const navigate = useNavigate();
 
   const { role } = useUserData();
+  const location = useLocation();
 
   // '채팅하기' 버튼 클릭
   const goChat = () => {
