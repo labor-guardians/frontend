@@ -5,6 +5,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { LOGIN, SIGN_UP_LABOR } from '../constants/path';
 import { apiClient } from '../services/apiClient';
 import { Alert } from '../components/Alert';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 export const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +19,7 @@ export const SignUp = () => {
   const [password, setPassword] = useState('');
   const [checkPwd, setCheckPwd] = useState();
   const [validPwd, setValidPwd] = useState(false);
+  const MySwal = withReactContent(Swal);
   const [errors, setErrors] = useState({
     userid: '',
     password: '',
@@ -172,12 +175,12 @@ export const SignUp = () => {
       });
       if (res.status === 200) {
         // alert('회원가입 완료');
-        setAlertInfo({
+        await MySwal.fire({
           title: '회원가입이 완료되었습니다.',
-          text: '',
-          result: true,
-          nav: LOGIN,
+          icon: 'success',
+          confirmButtonText: '확인',
         });
+        navigate(LOGIN);
       }
     } catch (err) {
       console.log(err);

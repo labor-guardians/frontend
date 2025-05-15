@@ -6,6 +6,7 @@ import { Button } from '../components/Button';
 import { BiEdit, BiMenu, BiX } from 'react-icons/bi';
 import { TypeAnimation } from 'react-type-animation';
 import { useNavigate } from 'react-router-dom';
+import { Spinner } from '../components/Spinner';
 
 export const ChatBot = () => {
   const [userId, setUserId] = useState();
@@ -152,6 +153,7 @@ export const ChatBot = () => {
 
     const userMsg = { fromUser: true, content: message };
     setChatList((prev) => [...prev, userMsg]);
+    setLoading(true);
 
     try {
       const res = await apiClient.post('/api/chat', data);
@@ -245,7 +247,7 @@ export const ChatBot = () => {
 
       {/* 사이드바 */}
       <div className={sidebarClasses}>
-        <ul className="list h-full shadow-md overflow-y-auto relative">
+        <ul className="list h-full shadow-md flex flex-col">
           <div className="flex justify-end mt-5 px-4" onClick={curReload}>
             <div className="md:hidden absolute top-5 left-5 z-50">
               <button
@@ -260,7 +262,7 @@ export const ChatBot = () => {
           <li className="p-4 pb-2 text-xs opacity-60 tracking-wide text-center">
             지난기록
           </li>
-          <div className="absolute top-[72px] bottom-0 left-0 right-0 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto">
             {chatRooms.map((room) => (
               <li
                 key={room.id}
@@ -355,12 +357,21 @@ export const ChatBot = () => {
                   )}
                 </div>
               ))}
+              {loading && (
+                <div className="flex justify-center">
+                  <div className="text-black px-3 md:px-6 py-3 w-[95%] md:w-[80%] rounded-md shadow-lg whitespace-pre-line">
+                    <div className="mb-[10vh]">
+                      <Spinner />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <form
               onSubmit={handleFormSubmit}
-              className="fixed bottom-0 left-0 md:left-[15%] w-full md:w-[80%] pb-3 z-20 px-4"
+              className="fixed bottom-0 left-0 w-full md:w-[80%] pb-3 z-20 px-4"
             >
-              <div className="flex items-center border-2 border-[#653F21] rounded-lg bg-white w-[90%] sm:w-[80%] md:w-[70%] lg:w-[40vw] h-[50px] px-3 mx-auto">
+              <div className="flex items-center border-2 border-[#653F21] rounded-lg bg-white  w-full max-w-[700px] h-[50px] px-3 mx-auto">
                 <input
                   type="text"
                   placeholder="LawBot에게 물어보세요"

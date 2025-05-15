@@ -6,6 +6,8 @@ import { LOGIN, SIGN_UP } from '../constants/path';
 import { apiClient } from '../services/apiClient';
 import axios from 'axios';
 import { baseURL } from '../constants/baseURL';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 export const SignUpLabor = () => {
   const [formData, setFormData] = useState({
@@ -27,6 +29,8 @@ export const SignUpLabor = () => {
   const [validEmail, setValidEmail] = useState(false);
   const navigate = useNavigate();
   const [alertInfo, setAlertInfo] = useState(null);
+  const MySwal = withReactContent(Swal);
+
   const categories = [
     '해고/징계',
     '산업재해',
@@ -176,18 +180,25 @@ export const SignUpLabor = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       if (res.status === 200) {
-        setAlertInfo({
+        await MySwal.fire({
           title: '회원가입이 완료되었습니다.',
-          text: '',
-          result: true,
-          nav: LOGIN,
+          icon: 'success',
+          confirmButtonText: '확인',
         });
+        navigate(LOGIN);
       }
     } catch (e) {
       console.log(e);
     }
   };
 
+  const toggleCategory = (target) => {
+    setSelectedCategories((prev) =>
+      prev.includes(target)
+        ? prev.filter((c) => c !== target)
+        : [...prev, target],
+    );
+  };
   return (
     <div className="flex justify-center items-center min-h-[60vh] px-4">
       <div className="flex flex-col w-full max-w-sm">
@@ -315,10 +326,10 @@ export const SignUpLabor = () => {
                 <button
                   key={category}
                   type="button"
-                  // onClick={() => toggleCategory(category)}
+                  onClick={() => toggleCategory(category)}
                   className={`px-4 py-2 rounded-full border ${
                     selectedCategories.includes(category)
-                      ? 'bg-blue-500 text-white border-blue-500'
+                      ? 'bg-[#e7dfccd] text-[#653F21] border-[#653F21]'
                       : 'bg-white text-gray-700 border-gray-300'
                   }`}
                 >
