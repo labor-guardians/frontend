@@ -7,6 +7,7 @@ import { BiEdit, BiMenu, BiX } from 'react-icons/bi';
 import { TypeAnimation } from 'react-type-animation';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '../components/Spinner';
+import LaborAttorney from '../constants/LaborAttorney';
 
 export const ChatBot = () => {
   const [userId, setUserId] = useState();
@@ -28,6 +29,7 @@ export const ChatBot = () => {
     y: 0,
     targetRoomId: null,
   });
+  const [recommendedConsultants, setRecommendedConsultants] = useState([]);
 
   const scrollRef = useRef();
   useEffect(() => {
@@ -171,6 +173,8 @@ export const ChatBot = () => {
           setConversationId(res.data.conversationId);
           curConversationIdRef.current = res.data.conversationId;
         }
+        const dummy = LaborAttorney();
+        setRecommendedConsultants(dummy);
       }
     } catch (err) {
       console.log(err);
@@ -296,9 +300,9 @@ export const ChatBot = () => {
       </div>
 
       {/* 채팅 영역 */}
-      <div className={`${mainContentClasses} px-4 md:pr-20`}>
+      <div className={`${mainContentClasses} px-4 md:pr-20 flex flex-col`}>
         {firstChat ? (
-          <div className="flex flex-col justify-center gap-[5vw] w-full h-[70vh] items-center">
+          <div className="flex flex-col justify-center gap-[5vw] w-full ">
             <div className="text-center font-bold text-[8vw] sm:text-[6vw] md:text-[4vw] lg:text-[3vw] leading-relaxed text-[#653F21] px-4">
               노동 관련 법률 자문을 구해보세요!
             </div>
@@ -323,7 +327,7 @@ export const ChatBot = () => {
           </div>
         ) : (
           <>
-            <div className="overflow-y-auto h-[calc(100vh-160px)] px-2 md:px-5 mb-[3vh]">
+            <div className="overflow-y-auto flex-1 px-2 md:px-5 mb-[3vh]">
               {chatList.map((chat, index) => (
                 <div
                   key={index}
@@ -340,7 +344,7 @@ export const ChatBot = () => {
                     <div className="flex justify-center">
                       <div className="text-black px-3 md:px-6 py-3 w-[95%] md:w-[80%] rounded-md shadow-lg whitespace-pre-line">
                         {chat.animate && index === chatList.length - 1 ? (
-                          <div className="mb-[10vh]">
+                          <div>
                             <TypeAnimation
                               sequence={[chat.content]}
                               wrapper="span"
@@ -367,9 +371,34 @@ export const ChatBot = () => {
                 </div>
               )}
             </div>
+            {recommendedConsultants.length > 0 && (
+              <div className="mt-4 mb-10">
+                <div className="flex flex-row">
+                  <p className="text-[#653F21] font-bold mb-2">
+                    관련 분야 노무사 추천
+                  </p>
+                  <p className="text-gray-500 mb-2 text-sm ml-5">더 보러가기</p>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {recommendedConsultants.map((consultant, idx) => (
+                    <div
+                      key={idx}
+                      className="p-4 rounded-xl shadow-md bg-white border border-[#ddd]"
+                    >
+                      <p className="font-bold text-lg">{consultant.name}</p>
+                      <p className="text-sm text-gray-600">{consultant.firm}</p>
+                      <p className="text-sm">경력: {consultant.experience}</p>
+                      <p className="text-sm">
+                        전문분야: {consultant.specialty}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             <form
               onSubmit={handleFormSubmit}
-              className="fixed bottom-0 left-0 w-full md:w-[80%] pb-3 z-20 px-4"
+              className="fixed bottom-0 left-0 w-full pb-3 z-20 flex justify-center items-center"
             >
               <div className="flex items-center border-2 border-[#653F21] rounded-lg bg-white  w-full max-w-[700px] h-[50px] px-3 mx-auto">
                 <input
