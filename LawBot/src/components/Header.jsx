@@ -31,7 +31,7 @@ export const Header = () => {
   // }
 
   return (
-    <div className="navbar bg-[#FEF9EB] fixed z-10 h-[88] top-0 left-0 lg:p-10 py-4 px-2">
+    <div className="navbar bg-[#FEF9EB] fixed z-10 lg:h-[152px] top-0 left-0 lg:p-10 py-4 px-2">
       <div className="navbar-start ">
         <div className="dropdown relative">
           <div
