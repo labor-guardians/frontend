@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Client } from '@stomp/stompjs';
 import send from '../assets/chatSend.png';
-import { wsBaseURL } from '../constants/baseURL';
 import { apiClient } from '../services/apiClient';
 import { useLocation } from 'react-router-dom';
 import useUserData from '../constants/hooks/useUserData';
@@ -10,6 +9,7 @@ import { MyChatBubble } from '../components/MyChatBubble';
 import { OtherChatBubble } from '../components/OtherChatBubble';
 import { isMyMessage } from '../utils/isMyMessage';
 import SockJS from 'sockjs-client';
+import { wsBaseURL } from '../constants/baseURL';
 
 export const LaborAttorneyChat = () => {
   // ======================== 🔧 파라미터 & 유저 데이터 ========================
@@ -244,6 +244,7 @@ export const LaborAttorneyChat = () => {
       },
     });
 
+    stompClient.activate();
     stomptRef.current = stompClient;
   };
 
