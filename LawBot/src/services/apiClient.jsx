@@ -36,8 +36,8 @@ apiClient.interceptors.response.use(
       try {
         const refreshResponse = await axios.post(
           import.meta.env.MODE === 'development'
-            ? `/api/reissue`
-            : `${baseURL}/reissue`, // 개발환경이면 api/ 아니면 baseURL
+            ? `/api/api/reissue`
+            : `${baseURL}/api/reissue`, // 개발환경이면 api/ 아니면 baseURL
           {},
           {
             withCredentials: true, // 보통 쿠키 기반 리프레시를 위해 필요
