@@ -3,10 +3,13 @@ import { LaborAttoneyCard } from '../components/LaborAttoneyCard';
 import { apiClient } from '../services/apiClient';
 import { LoadingLaborAttoneyCard } from '../components/loading/LoadingLaborAttoneyCard';
 import { FilterList } from '../components/FilterList';
+import { CityDistrictSelector } from '../components/CityDistrictSelector';
 export const LaborAttorneyList = () => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [checkedFilter, setCheckFilter] = useState('');
+  const [selectedCity, setSelectedCity] = useState('전체');
+  const [selectedDistrict, setSelectedDistrict] = useState('전체');
 
   const loadConsultants = async () => {
     setLoading(true); // 데이터 로딩 시작
@@ -34,6 +37,18 @@ export const LaborAttorneyList = () => {
     setCheckFilter((prev) => (prev === category ? '' : category));
   };
 
+  const handleCityChange = (e) => {
+    const city = e.target.value;
+    console.log('선택한 시도:', city);
+    setSelectedCity(city);
+  };
+
+  const handleDistrictChange = (e) => {
+    const district = e.target.value;
+    console.log('선택한 구:', district);
+    setSelectedDistrict(district);
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center ">
@@ -45,24 +60,12 @@ export const LaborAttorneyList = () => {
           checkedFilter={checkedFilter}
           setCheckFilter={handleFilter}
         />
-        <div className="flex self-end items-center mb-4">
-          <div className="me-4">지역</div>
-          <div className="flex self-end gap-2">
-            <select defaultValue="전체" className="w-fit select self-end">
-              <option>전체</option>
-              <option>서울특별시</option>
-              <option>경기도</option>
-              <option>인천과역시</option>
-            </select>
-            <select defaultValue="전체" className="w-fit select self-end ">
-              <option>전체</option>
-              <option>강남구</option>
-              <option>강동구</option>
-              <option>강북구</option>
-              <option>강서구</option>
-            </select>
-          </div>
-        </div>
+        <CityDistrictSelector
+          selectedCity={selectedCity}
+          selectedDistrict={selectedDistrict}
+          handleCityChange={handleCityChange}
+          handleDistrictChange={handleDistrictChange}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
           {Array.from({ length: 8 }).map((_, index) => (
             <LoadingLaborAttoneyCard index={index} key={index} />
@@ -84,17 +87,26 @@ export const LaborAttorneyList = () => {
         <div className="flex self-end items-center mb-4">
           <div className="me-4">지역</div>
           <div className="flex self-end gap-2">
-            <select defaultValue="전체" className="w-fit select self-end">
+            <select
+              defaultValue="전체"
+              className="w-fit select self-end"
+              onChange={handleCityChange}
+            >
               <option>전체</option>
               <option>서울특별시</option>
               <option>경기도</option>
               <option>인천과역시</option>
             </select>
-            <select defaultValue="전체" className="w-fit select self-end ">
+            <select
+              defaultValue="전체"
+              className="w-fit select self-end"
+              onChange={handleDistrictChange}
+            >
               <option>전체</option>
               <option>강남구</option>
               <option>강동구</option>
               <option>강북구</option>
+              <option>강서구</option>
             </select>
           </div>
         </div>
