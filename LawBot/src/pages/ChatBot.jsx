@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, use } from 'react';
 import send from '../assets/chatSend.png';
 import { apiClient } from '../services/apiClient';
 import ContextMenu from '../components/ContextMenu';
 import { Button } from '../components/Button';
 import { BiEdit, BiMenu, BiX } from 'react-icons/bi';
 import { TypeAnimation } from 'react-type-animation';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Spinner } from '../components/Spinner';
 import LaborAttorney from '../constants/LaborAttorney';
+import ReactMarkdown from 'react-markdown';
+import { LABOR_ATTORNEY_LIST } from '../constants/path';
 
 export const ChatBot = () => {
   const [userId, setUserId] = useState();
@@ -16,6 +18,8 @@ export const ChatBot = () => {
   const navigate = useNavigate();
   const [chatRooms, setChatRooms] = useState([]);
   const [chatList, setChatList] = useState([]);
+  const [category, setCategory] = useState('');
+  const [laborAttorneyList, setLaborAttorneyList] = useState([]);
   const [sendMessage, setSendMessage] = useState('');
   const [conversationId, setConversationId] = useState();
   const [editingRoomId, setEditingRoomId] = useState(null);
@@ -30,7 +34,25 @@ export const ChatBot = () => {
     targetRoomId: null,
   });
   const [recommendedConsultants, setRecommendedConsultants] = useState([]);
+  const reverseCategoryMap = {
+    DISMISSAL: '해고/징계',
+    INJURY: '산업재해',
+    WAGE: '임금/퇴직금',
+    BULLYING: '직장 내 괴롭힘',
+    ETC: '기타 근로분쟁',
+  };
+  useEffect(() => {
+    if (firstChat) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
 
+    return () => {
+      // cleanup
+      document.body.style.overflow = 'auto';
+    };
+  }, [firstChat]);
   const scrollRef = useRef();
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -161,6 +183,7 @@ export const ChatBot = () => {
       const res = await apiClient.post('/api/chat', data);
       if (res.status === 200) {
         fetchChatRooms(userId);
+
         const { botMessage } = res.data;
         const botMsg = {
           fromUser: false,
@@ -175,6 +198,8 @@ export const ChatBot = () => {
         }
         const dummy = LaborAttorney();
         setRecommendedConsultants(dummy);
+        setCategory(res.data.category);
+        fetchLaborAttorneyList(res.data.category);
       }
     } catch (err) {
       console.log(err);
@@ -183,6 +208,20 @@ export const ChatBot = () => {
     }
   };
 
+  const fetchLaborAttorneyList = async (data) => {
+    if (!data) return;
+    try {
+      const res = await apiClient.get('/api/user/consultant', {
+        params: { category: data },
+      });
+      if (res.status === 200) {
+        console.log(res.data);
+        setLaborAttorneyList(res.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const handleFormSubmit = (e) => {
     e.preventDefault();
     sendChat();
@@ -222,21 +261,26 @@ export const ChatBot = () => {
   };
 
   const sidebarClasses = `
-  fixed top-0 left-0 h-screen z-30 bg-[#e7dfcc]
+  fixed left-0 z-30 bg-[#e7dfcc]
   shadow-lg w-64 md:w-64 rounded-xl
-  transition-transform duration-300 ease-in-out top-[150px]
+  transition-transform duration-300 ease-in-out
+  top-[150px] h-[calc(100vh-150px-30px)]
   ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
 `;
 
   // 메인 컨텐츠 영역 클래스 계산
   const mainContentClasses = `
   ml-0 md:ml-64 transition-all duration-300 ease-in-out
-  flex flex-col w-full relative
+  flex flex-col w-full relative mt-[100px]
   ${sidebarOpen && window.innerWidth < 768 ? 'opacity-30' : 'opacity-100'}
 `;
 
   return (
-    <div className="pt-28 flex relative min-h-screen bg-[#FEF9EB]">
+    <div
+      className={`pt-28 flex relative ${
+        firstChat ? 'h-screen overflow-hidden' : 'min-h-screen'
+      } bg-[#FEF9EB]`}
+    >
       {/* 모바일 토글 버튼 */}
       {!sidebarOpen && (
         <div className="md:hidden fixed left-4 top-[88px] z-40">
@@ -346,7 +390,19 @@ export const ChatBot = () => {
                         {chat.animate && index === chatList.length - 1 ? (
                           <div>
                             <TypeAnimation
-                              sequence={[chat.content]}
+                              sequence={[
+                                chat.content,
+                                () => {
+                                  setChatList((prev) => {
+                                    const updated = [...prev];
+                                    updated[index] = {
+                                      ...chat,
+                                      animate: false,
+                                    };
+                                    return updated;
+                                  });
+                                },
+                              ]}
                               wrapper="span"
                               cursor={true}
                               speed={50}
@@ -354,7 +410,7 @@ export const ChatBot = () => {
                             />
                           </div>
                         ) : (
-                          chat.content
+                          <ReactMarkdown>{chat.content}</ReactMarkdown>
                         )}
                       </div>
                     </div>
@@ -371,25 +427,37 @@ export const ChatBot = () => {
                 </div>
               )}
             </div>
-            {recommendedConsultants.length > 0 && (
+            {laborAttorneyList.length > 0 && (
               <div className="mt-4 mb-10">
                 <div className="flex flex-row">
                   <p className="text-[#653F21] font-bold mb-2">
                     관련 분야 노무사 추천
                   </p>
-                  <p className="text-gray-500 mb-2 text-sm ml-5">더 보러가기</p>
+                  <Link
+                    to={LABOR_ATTORNEY_LIST}
+                    className="text-gray-500 mb-2 text-sm ml-5"
+                  >
+                    더 보러가기
+                  </Link>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {recommendedConsultants.map((consultant, idx) => (
+                  {laborAttorneyList.map((consultant, idx) => (
                     <div
                       key={idx}
                       className="p-4 rounded-xl shadow-md bg-white border border-[#ddd]"
                     >
-                      <p className="font-bold text-lg">{consultant.name}</p>
-                      <p className="text-sm text-gray-600">{consultant.firm}</p>
-                      <p className="text-sm">경력: {consultant.experience}</p>
-                      <p className="text-sm">
-                        전문분야: {consultant.specialty}
+                      <p className="font-bold text-lg">{consultant.userName}</p>
+                      {/* <p className="text-sm text-gray-600">{consultant.firm}</p>
+                      <p className="text-sm">경력: {consultant.experience}</p> */}
+                      <p className="text-sm mt-[10px]">
+                        전문분야:{' '}
+                        {consultant.categories
+                          .map((code) => reverseCategoryMap[code])
+                          .filter(Boolean) // 혹시 매핑 안 되는 값 제거
+                          .join(', ')}
+                      </p>
+                      <p className="text-sm mt-[10px]">
+                        지역: {consultant.mainArea} {consultant.subArea}
                       </p>
                     </div>
                   ))}

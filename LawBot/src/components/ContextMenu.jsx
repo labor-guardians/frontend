@@ -4,7 +4,7 @@ export const ContextMenu = ({ x, y, onEdit, onDelete }) => {
   return (
     <ul
       className="fixed bg-white border border-gray-300 rounded shadow-md z-50"
-      style={{ top: y, left: x }}
+      style={{ top: `${y}px`, left: `${x}px` }}
     >
       <li
         className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
