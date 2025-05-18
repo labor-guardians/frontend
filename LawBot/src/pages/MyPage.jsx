@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Button } from '../components/Button';
 import { BsPersonCircle } from 'react-icons/bs';
 import { InputText } from '../components/InputText';
@@ -51,7 +51,18 @@ export const MyPage = () => {
       changeArea();
     }
   }, [selectedRegion]);
+
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const isFirstCategoryLoad = useRef(true);
+  useEffect(() => {
+    if (selectedCategories.length > 0) {
+      if (isFirstCategoryLoad.current) {
+        isFirstCategoryLoad.current = false;
+      } else {
+        changeCategory();
+      }
+    }
+  }, [selectedCategories]);
   const categories = [
     '해고/징계',
     '산업재해',
@@ -275,7 +286,6 @@ export const MyPage = () => {
         ? prev.filter((c) => c !== target)
         : [...prev, target],
     );
-    changeCategory();
   };
 
   //카테고리 변경
