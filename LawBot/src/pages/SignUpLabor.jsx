@@ -181,6 +181,8 @@ export const SignUpLabor = () => {
       email: formData.email,
       description: formData.description,
       categories: categoryCodes,
+      mainArea: selectedRegion.area,
+      subArea: selectedRegion.subArea,
     };
     fd.append(
       'ConsultantData',
@@ -353,8 +355,10 @@ export const SignUpLabor = () => {
               ))}
             </div>
           </div>
-
-          <AreaSelect onAreaChange={setSeletedRegion} />
+          <div className="mt-[10px]">
+            <label className="font-semibold mb-2 block">지역</label>
+            <AreaSelect onAreaChange={setSeletedRegion} />
+          </div>
 
           {errors.global && (
             <p className="text-red-500 text-center mb-4">{errors.global}</p>
