@@ -8,6 +8,7 @@ import axios from 'axios';
 import { baseURL } from '../constants/baseURL';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import AreaSelect from '../components/AreaSelect';
 
 export const SignUpLabor = () => {
   const [formData, setFormData] = useState({
@@ -30,6 +31,10 @@ export const SignUpLabor = () => {
   const navigate = useNavigate();
   const [alertInfo, setAlertInfo] = useState(null);
   const MySwal = withReactContent(Swal);
+  const [selectedRegion, setSeletedRegion] = useState({
+    area: '',
+    subArea: '',
+  });
 
   const categories = [
     '해고/징계',
@@ -38,6 +43,13 @@ export const SignUpLabor = () => {
     '직장 내 괴롭힘',
     '기타 근로분쟁',
   ];
+  const categoryMap = {
+    '해고/징계': 'DISMISSAL',
+    산업재해: 'INJURY',
+    '임금/퇴직금': 'WAGE',
+    '직장 내 괴롭힘': 'BULLYING',
+    '기타 근로분쟁': 'ETC',
+  };
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   const handleChange = (label, value) => {
@@ -50,12 +62,12 @@ export const SignUpLabor = () => {
     } else {
       setFormData((prev) => ({ ...prev, [label]: value }));
     }
+    setErrors((prev) => ({ ...prev, [label]: '', global: '' }));
     if (label === 'userid') setIsUsedId(true);
     if (label === 'email') {
       setValidEmail(false);
       setEmailCodeSendSuc(false);
     }
-    setErrors((prev) => ({ ...prev, [label]: '', global: '' }));
   };
 
   const handleCheckDupId = async () => {
@@ -136,7 +148,9 @@ export const SignUpLabor = () => {
       !formData.password ||
       !formData.passwordCheck ||
       !formData.license ||
-      !formData.description
+      !formData.description ||
+      selectedCategories == null ||
+      selectedRegion == ''
     ) {
       return setErrors((prev) => ({
         ...prev,
@@ -158,7 +172,7 @@ export const SignUpLabor = () => {
         ...prev,
         email: '이메일 인증이 필요합니다.',
       }));
-
+    const categoryCodes = selectedCategories.map((k) => categoryMap[k]);
     const fd = new FormData();
     const consultantJson = {
       userid: formData.userid,
@@ -166,6 +180,7 @@ export const SignUpLabor = () => {
       username: formData.username,
       email: formData.email,
       description: formData.description,
+      categories: categoryCodes,
     };
     fd.append(
       'ConsultantData',
@@ -311,7 +326,7 @@ export const SignUpLabor = () => {
               </div>
               {errors[field] && (
                 <p
-                  className={`${isUsedId ? 'text-red-500' : 'text-green-500'} text-sm mt-1`}
+                  className={`${field === 'userid' && !isUsedId ? 'text-green-500' : field === 'emailCode' && validEmail ? 'text-green-500' : 'text-red-500'} text-sm mt-1`}
                 >
                   {errors[field]}
                 </p>
@@ -338,6 +353,8 @@ export const SignUpLabor = () => {
               ))}
             </div>
           </div>
+
+          <AreaSelect onAreaChange={setSeletedRegion} />
 
           {errors.global && (
             <p className="text-red-500 text-center mb-4">{errors.global}</p>

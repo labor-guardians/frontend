@@ -261,7 +261,7 @@ export const SignUp = () => {
               </div>
               {errors[field] && (
                 <p
-                  className={`${isUsedId ? 'text-red-500' : 'text-green-500'} text-sm mt-1`}
+                  className={`${field === 'userid' && !isUsedId ? 'text-green-500' : field === 'emailCode' && validEmail ? 'text-green-500' : 'text-red-500'} text-sm mt-1`}
                 >
                   {errors[field]}
                 </p>
