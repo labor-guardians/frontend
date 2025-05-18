@@ -4,6 +4,7 @@ import { BsPersonCircle } from 'react-icons/bs';
 import { InputText } from '../components/InputText';
 import useUserData from '../constants/hooks/useUserData';
 import { apiClient } from '../services/apiClient';
+import AreaSelect from '../components/AreaSelect';
 
 export const MyPage = () => {
   const { userId, access, role } = useUserData();
@@ -41,6 +42,37 @@ export const MyPage = () => {
     newPwd: '',
     newPwdCheck: '',
   });
+  const [selectedRegion, setSeletedRegion] = useState({
+    area: '',
+    subArea: '',
+  });
+  useEffect(() => {
+    if (selectedRegion.area && selectedRegion.subArea) {
+      changeArea();
+    }
+  }, [selectedRegion]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const categories = [
+    '해고/징계',
+    '산업재해',
+    '임금/퇴직금',
+    '직장 내 괴롭힘',
+    '기타 근로분쟁',
+  ];
+  const categoryMap = {
+    '해고/징계': 'DISMISSAL',
+    산업재해: 'INJURY',
+    '임금/퇴직금': 'WAGE',
+    '직장 내 괴롭힘': 'BULLYING',
+    '기타 근로분쟁': 'ETC',
+  };
+  const reverseCategoryMap = {
+    DISMISSAL: '해고/징계',
+    INJURY: '산업재해',
+    WAGE: '임금/퇴직금',
+    BULLYING: '직장 내 괴롭힘',
+    ETC: '기타 근로분쟁',
+  };
   //이미지 파일 업로드드
   const imageUpload = (e) => {
     const file = e.target.files[0];
@@ -69,6 +101,12 @@ export const MyPage = () => {
         console.log(res.data.photo);
         if (res.data.photo != null) {
           getImage(res.data.photo);
+        }
+        if (res.data.categories) {
+          const displayCategories = res.data.categories
+            .map((code) => reverseCategoryMap[code])
+            .filter(Boolean); // 매핑되지 않은 값 제거
+          setSelectedCategories(displayCategories);
         }
       }
     } catch (err) {
@@ -231,9 +269,59 @@ export const MyPage = () => {
       }
     }
   };
+  const toggleCategory = (target) => {
+    setSelectedCategories((prev) =>
+      prev.includes(target)
+        ? prev.filter((c) => c !== target)
+        : [...prev, target],
+    );
+    changeCategory();
+  };
+
+  //카테고리 변경
+  const changeCategory = async () => {
+    const categoryCodes = selectedCategories
+      .map((c) => categoryMap[c])
+      .filter(Boolean);
+    try {
+      const res = await apiClient.put('/api/user/category', null, {
+        params: { categories: categoryCodes },
+        paramsSerializer: (params) => {
+          // 배열을 query string으로 맞게 변환
+          return params.categories
+            .map((c) => `categories=${encodeURIComponent(c)}`)
+            .join('&');
+        },
+      });
+      if (res.status == 200) {
+        alert('카테고리가 수정되었습니다.');
+        console.log(res.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  //지역 변경
+  const changeArea = async () => {
+    try {
+      const res = await apiClient.put('/api/user/area', null, {
+        params: {
+          mainArea: selectedRegion.area,
+          subArea: selectedRegion.subArea,
+        },
+      });
+      if (res.status === 200) {
+        alert('지역이 변경되었습니다.');
+        console.log(res.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <>
-      <div className="flex flex-col items-center px-4 md:px-1 mt-80">
+      <div className="flex flex-col items-center px-4 md:px-1 mt-[200px]">
         {!selectedImg ? (
           <div className="flex justify-center">
             <BsPersonCircle
@@ -376,6 +464,29 @@ export const MyPage = () => {
               <Button text="비밀번호 변경" onClick={pwdChange} />
             </div>
           )}
+          <div className="flex flex-col justify-between text-sm md:text-base mt-6">
+            <div className="font-bold">카테고리</div>
+            <div className="flex flex-wrap gap-2 mt-5">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => toggleCategory(category)}
+                  className={`px-4 py-2 rounded-full border ${
+                    selectedCategories.includes(category)
+                      ? 'bg-[#e7dfccd] text-[#653F21] border-[#653F21]'
+                      : 'bg-white text-gray-700 border-gray-300'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col justify-between text-sm md:text-base mt-6">
+            <div className="font-bold">지역</div>
+            <AreaSelect onAreaChange={setSeletedRegion} />
+          </div>
         </div>
       </div>
     </>
