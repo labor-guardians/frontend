@@ -165,11 +165,6 @@ export const LaborAttorneyChat = () => {
 
   // ======================== 🧠 새로운 채팅방 생성 ========================
   const makeNewConversation = async () => {
-    if (!stomptRef.current || !stomptRef.current.connected) {
-      console.warn('STOMP 연결 안 됨, 메시지 전송 취소');
-      return;
-    }
-
     // 본인이 노무사이면 반대로
     const requestUserId = role == USER ? userId : otherUserId;
     const consultantId = role == USER ? otherUserId : userId;
@@ -202,6 +197,7 @@ export const LaborAttorneyChat = () => {
   // ======================== 🔌 웹소켓 연결 ========================
   const connect = () => {
     console.log('웹소켓 연결 시도');
+    const accessToken = localStorage.getItem('access');
 
     const stompClient = new Client({
       webSocketFactory: () => new SockJS(wsBaseURL),
@@ -248,7 +244,6 @@ export const LaborAttorneyChat = () => {
       },
     });
 
-    stompClient.activate();
     stomptRef.current = stompClient;
   };
 
