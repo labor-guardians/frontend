@@ -45,6 +45,24 @@ export const LaborAttorneyList = () => {
           checkedFilter={checkedFilter}
           setCheckFilter={handleFilter}
         />
+        <div className="flex self-end items-center mb-4">
+          <div className="me-4">지역</div>
+          <div className="flex self-end gap-2">
+            <select defaultValue="전체" className="w-fit select self-end">
+              <option>전체</option>
+              <option>서울특별시</option>
+              <option>경기도</option>
+              <option>인천과역시</option>
+            </select>
+            <select defaultValue="전체" className="w-fit select self-end ">
+              <option>전체</option>
+              <option>강남구</option>
+              <option>강동구</option>
+              <option>강북구</option>
+              <option>강서구</option>
+            </select>
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
           {Array.from({ length: 8 }).map((_, index) => (
             <LoadingLaborAttoneyCard index={index} key={index} />
@@ -63,6 +81,23 @@ export const LaborAttorneyList = () => {
           checkedFilter={checkedFilter}
           setCheckFilter={handleFilter}
         />
+        <div className="flex self-end items-center mb-4">
+          <div className="me-4">지역</div>
+          <div className="flex self-end gap-2">
+            <select defaultValue="전체" className="w-fit select self-end">
+              <option>전체</option>
+              <option>서울특별시</option>
+              <option>경기도</option>
+              <option>인천과역시</option>
+            </select>
+            <select defaultValue="전체" className="w-fit select self-end ">
+              <option>전체</option>
+              <option>강남구</option>
+              <option>강동구</option>
+              <option>강북구</option>
+            </select>
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {list &&
             list.map((attoney, index) => (
