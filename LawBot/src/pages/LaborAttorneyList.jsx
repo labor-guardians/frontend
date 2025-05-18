@@ -15,11 +15,27 @@ export const LaborAttorneyList = () => {
     setLoading(true); // 데이터 로딩 시작
 
     try {
-      const endpoint = checkedFilter
-        ? `/api/user/consultant?category=${checkedFilter}`
-        : `/api/user/consultant`;
+      const params = {};
 
-      const consultants = await apiClient.get(endpoint);
+      if (checkedFilter) {
+        params.category = checkedFilter;
+      }
+
+      if (selectedCity && selectedCity !== '전체') {
+        params.mainArea = selectedCity;
+      }
+      if (
+        selectedDistrict &&
+        selectedDistrict !== '전체' &&
+        selectedCity &&
+        selectedCity !== '전체'
+      ) {
+        params.subArea = selectedDistrict;
+      }
+
+      const consultants = await apiClient.get('/api/user/consultant', {
+        params,
+      });
       setList(consultants.data);
     } catch (error) {
       console.error('노무사 목록 불러오기 실패:', error);
@@ -31,7 +47,7 @@ export const LaborAttorneyList = () => {
 
   useEffect(() => {
     loadConsultants();
-  }, [checkedFilter]);
+  }, [checkedFilter, selectedCity, selectedDistrict]);
 
   const handleFilter = (category) => {
     setCheckFilter((prev) => (prev === category ? '' : category));
