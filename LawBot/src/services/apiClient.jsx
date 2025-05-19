@@ -59,7 +59,10 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         // 리프레시도 실패 → 로그아웃 처리 등 필요
         console.error('리프레시 토큰 실패', refreshError);
-        if (refreshError.response?.status === 400) {
+        if (
+          refreshError.response?.status === 400 ||
+          refreshError.response?.status === 500
+        ) {
           window.localStorage.clear();
           const currentPath = window.location.pathname + window.location.search;
           window.location.href = `/login?redirectTo=${encodeURIComponent(currentPath)}`;
