@@ -37,7 +37,7 @@ export const LaborChatHistoryCard = ({
     for (let i = messages.length - 1; i >= 0; i--) {
       const msg = messages[i];
 
-      if (msg.isRead || isMyMessage(msg.fromUser, role)) {
+      if (msg.read || isMyMessage(msg.fromUser, role)) {
         break; // 읽은 메시지를 만나면 그만 센다
       }
 
