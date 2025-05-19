@@ -368,7 +368,13 @@ export const LaborAttorneyChat = () => {
         </div>
 
         {/* 입력창 */}
-        <div className="fixed bottom-0 left-0 right-0 pb-3  z-20 m-auto">
+        <form
+          className="fixed bottom-0 left-0 right-0 pb-3  z-20 m-auto"
+          onSubmit={(e) => {
+            e.preventDefault();
+            sendMessage();
+          }}
+        >
           <div className="flex items-center border-2 w-3xl border-[#653F21] bg-white rounded-lg  h-[50px] px-4 mx-auto">
             <input
               type="text"
@@ -376,18 +382,12 @@ export const LaborAttorneyChat = () => {
               className="flex-grow outline-none"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
             />
-            <button type="button" onClick={sendMessage}>
+            <button type="submit">
               <img src={send} alt="send" className="w-5 h-5 ml-2" />
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
