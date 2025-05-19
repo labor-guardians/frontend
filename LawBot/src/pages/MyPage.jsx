@@ -474,29 +474,33 @@ export const MyPage = () => {
               <Button text="비밀번호 변경" onClick={pwdChange} />
             </div>
           )}
-          <div className="flex flex-col justify-between text-sm md:text-base mt-6">
-            <div className="font-bold">카테고리</div>
-            <div className="flex flex-wrap gap-2 mt-5">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  type="button"
-                  onClick={() => toggleCategory(category)}
-                  className={`px-4 py-2 rounded-full border ${
-                    selectedCategories.includes(category)
-                      ? 'bg-[#e7dfccd] text-[#653F21] border-[#653F21]'
-                      : 'bg-white text-gray-700 border-gray-300'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
+          {role !== 'User' && (
+            <div>
+              <div className="flex flex-col justify-between text-sm md:text-base mt-6">
+                <div className="font-bold">카테고리</div>
+                <div className="flex flex-wrap gap-2 mt-5">
+                  {categories.map((category) => (
+                    <button
+                      key={category}
+                      type="button"
+                      onClick={() => toggleCategory(category)}
+                      className={`px-4 py-2 rounded-full border ${
+                        selectedCategories.includes(category)
+                          ? 'bg-[#e7dfccd] text-[#653F21] border-[#653F21]'
+                          : 'bg-white text-gray-700 border-gray-300'
+                      }`}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-col justify-between text-sm md:text-base mt-6">
+                <div className="font-bold">지역</div>
+                <AreaSelect onAreaChange={setSeletedRegion} />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col justify-between text-sm md:text-base mt-6">
-            <div className="font-bold">지역</div>
-            <AreaSelect onAreaChange={setSeletedRegion} />
-          </div>
+          )}
         </div>
       </div>
     </>
