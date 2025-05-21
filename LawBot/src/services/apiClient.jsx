@@ -28,6 +28,12 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    const hasAccessHeader = originalRequest.headers?.access;
+
+    if (!hasAccessHeader) {
+      return Promise.reject(error);
+    }
+
     // 401이고, 재시도한 요청이 아니면
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true; // 중복 방지
@@ -59,10 +65,7 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         // 리프레시도 실패 → 로그아웃 처리 등 필요
         console.error('리프레시 토큰 실패', refreshError);
-        if (
-          refreshError.response?.status === 400 ||
-          refreshError.response?.status === 500
-        ) {
+        if (refreshError.response?.status === 500) {
           window.localStorage.clear();
           const currentPath = window.location.pathname + window.location.search;
           window.location.href = `/login?redirectTo=${encodeURIComponent(currentPath)}`;
