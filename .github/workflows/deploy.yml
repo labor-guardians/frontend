@@ -12,6 +12,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: LawBot
 
     strategy:
       matrix:
@@ -26,6 +29,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        cache-dependency-path: LawBot/package-lock.json
+        
     - name: Install dependencies
       run: npm install
 
@@ -43,7 +48,7 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: "build/*"
+        source: "Lawbot/build/*"
         target: "/home/ubuntu/lawbot/build"
 
     - name: Restart Nginx
