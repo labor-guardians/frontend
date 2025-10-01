@@ -50,6 +50,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         source: "LawBot/dist/*"
         target: "/home/ubuntu/lawbot/build"
+        strip_components: 2   
 
     - name: Restart Nginx
       uses: appleboy/ssh-action@v0.1.6
